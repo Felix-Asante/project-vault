@@ -4,7 +4,7 @@ import { WebhookEvent } from '@clerk/nextjs/server'
 import { UserJSON } from '@clerk/types'
 import { Webhook } from 'svix'
 import { SUBSCRIPTION_PLANS } from '@/constants/enum'
-import { onCreatedUser } from '@/lib/actions/users'
+import { onCreatedUser, onDeleteUser } from '@/lib/actions/users'
 
 export async function POST(req: Request) {
     const WEBHOOK_SECRET = Env.CLERK_WEBHOOK_SECRET
@@ -57,8 +57,9 @@ export async function POST(req: Request) {
         
     }
 
-    if (evt.type === 'user.deleted' && evt.data.deleted) {
+    if (evt.type === 'user.deleted' && evt.data.deleted && evt.data?.id) {
         // DELETE USER
+        await onDeleteUser(evt.data.id)
     }
     return new Response('', { status: 200 })
 }

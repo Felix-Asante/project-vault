@@ -6,7 +6,7 @@ dotenv.config({ path: '.env.local' })
 
 export const Env = createEnv({
     server: {
-        NODE_ENV: z.enum(['development', 'test', 'production']),
+        // NODE_ENV: z.enum(['development', 'test', 'production']),
         DATABASE_URL: z.string(),
         CLERK_SECRET_KEY: z.string(),
         CLERK_WEBHOOK_SECRET: z.string(),
@@ -24,7 +24,7 @@ export const Env = createEnv({
         NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: z.string(),
     },
     runtimeEnv: {
-        NODE_ENV: process.env.NODE_ENV,
+        // NODE_ENV: process.env.NODE_ENV,
         DATABASE_URL: process.env.DATABASE_URL,
         CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
         CLOUDINARY_KEY: process.env.CLOUDINARY_KEY,

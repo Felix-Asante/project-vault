@@ -9,4 +9,5 @@ export type User = {
     created_at: Date;
     updated_at: Date;
     plan: string;
+    slug: string;
 }

@@ -4,19 +4,20 @@ import { db } from "..";
 import { SubscriptionPlansTable, UserTable } from "../schemas/users";
 import { CreateUserDto } from "@/types/dtos/user.dto";
 import { SUBSCRIPTION_PLANS } from "@/constants/enum";
+import { getRandomNumbers } from "@/utils";
 
 
  class UsersRepository{
+
+    async createUserSlug(first_name:string,last_name:string){
+        return `${first_name.toLowerCase()}${last_name.toLowerCase()}${getRandomNumbers(4)}-project`;
+    }
+
     async getUserById(id: string): Promise<User | null> {
      const users = await db.query.UserTable.findFirst({
         where: eq(UserTable.id, id),
         with:{
-            plan:{
-                with:{
-                    label:true,
-                    id:true,
-                }
-            }
+            plan:true
         }
      })
      return users ?? null;
@@ -26,12 +27,7 @@ import { SUBSCRIPTION_PLANS } from "@/constants/enum";
         const users = await db.query.UserTable.findFirst({
             where: eq(UserTable.user_id, clerkId),
             with:{
-                plan:{
-                    with:{
-                        label:true,
-                        id:true,
-                    }
-                }
+                plan:true
             }
         })
         return users?? null;
@@ -48,8 +44,14 @@ import { SUBSCRIPTION_PLANS } from "@/constants/enum";
         const basicPlan  = await db.query.SubscriptionPlansTable.findFirst({ where: eq(SubscriptionPlansTable.label, SUBSCRIPTION_PLANS.BASIC) })
         if(!basicPlan) throw new Error('cannot create user with basic plan')
 
-        const insertedUser = await db.insert(UserTable).values({...data,plan:basicPlan.id})
+        const slug = await this.createUserSlug(data.first_name, data.last_name)
+
+        const insertedUser = await db.insert(UserTable).values({...data,slug,plan:basicPlan.id})
         return insertedUser[0]
+    }
+
+    async deleteUser(id:string){
+        await db.delete(UserTable).where(eq(UserTable.user_id, id))
     }
 }
 

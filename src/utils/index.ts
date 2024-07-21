@@ -102,3 +102,16 @@ export function formatNumber(num: number): string {
 
     return formatter.format(num)
 }
+
+export function getRandomNumbers(length: number): string {
+  if (length <= 1) {
+    throw new Error("Length must be greater than 1");
+  }
+
+  let randomNumber = '';
+  for (let i = 0; i < length; i++) {
+    randomNumber += Math.floor(Math.random() * 10).toString();
+  }
+
+  return randomNumber;
+}
