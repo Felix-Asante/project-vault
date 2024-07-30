@@ -2,7 +2,7 @@ import { Member_Owner_Permission } from '@/constants/data'
 import { Roles } from '@/constants/enum'
 import { db } from '@/database'
 import { generateRandomString, getErrorMessage } from '@/utils'
-import { and, eq, ilike } from 'drizzle-orm'
+import { and, eq, ilike, sql } from 'drizzle-orm'
 
 import { CreateProjectDto } from '@/types/dtos/project.dto'
 import { ProJects } from '@/types/projects'
@@ -13,6 +13,12 @@ import { ProjectMembersTable, ProjectTable } from '../schemas/projects'
 import authRepository from './authRepository'
 import usersRepository from './usersRepository'
 
+type GetProjectMembersOptions = {
+    limit?: number
+    page?: number
+    search?: string
+    sortBy?: string
+}
 class ProjectsRepository {
     async createProject(userId: string, data: CreateProjectDto) {
         try {
@@ -96,6 +102,57 @@ class ProjectsRepository {
                 .execute()
 
             return userProjects
+        } catch (error) {
+            throw new Error(getErrorMessage(error))
+        }
+    }
+
+    async getProjectByKey(key: string) {
+        try {
+            const project = await db.query.ProjectTable.findFirst({
+                where: eq(ProjectTable.key, key),
+            })
+
+            return project
+        } catch (error) {
+            throw new Error(getErrorMessage(error))
+        }
+    }
+
+    async getAllProjectMembers(
+        projectId: string,
+        options?: GetProjectMembersOptions
+    ) {
+        try {
+            const { limit = 100, page = 1 } = options ?? {}
+
+            const offset = (page - 1) * limit
+
+            const projectMembers = await db.query.ProjectMembersTable.findMany({
+                where: eq(ProjectMembersTable.project_id, projectId),
+                with: {
+                    role: true,
+                    user: true,
+                },
+                limit,
+                offset,
+            })
+            const [{ count = 1 }] = await db
+                .select({
+                    count: sql`count(*)`,
+                })
+                .from(ProjectMembersTable)
+            const totalPages = Math.ceil((count as number) / limit)
+
+            return {
+                items: projectMembers,
+                metadata: {
+                    currentPage: page,
+                    limit,
+                    totalPages,
+                    totalCount: count,
+                },
+            }
         } catch (error) {
             throw new Error(getErrorMessage(error))
         }

@@ -18,6 +18,7 @@ export const ProjectTable = pgTable(
         name: text('name').notNull(),
         description: text('description').notNull(),
         logo: text('logo'),
+        link: text('logo'),
         key: text('key').notNull(),
         created_at: timestamp('created_at').defaultNow().notNull(),
         updated_at: timestamp('updated_at').defaultNow().notNull(),
@@ -41,7 +42,9 @@ export const ProjectMembersTable = pgTable('project_members', {
     user_id: uuid('user_id')
         .references(() => UserTable.id, { onDelete: 'cascade' })
         .notNull(),
-    role: uuid('role').references(() => RolesTable.id, { onDelete: 'cascade' }),
+    role: uuid('role')
+        .references(() => RolesTable.id, { onDelete: 'cascade' })
+        .notNull(),
     created_at: timestamp('created_at').defaultNow(),
     updated_at: timestamp('updated_at').defaultNow(),
 })

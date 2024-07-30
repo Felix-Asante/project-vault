@@ -34,3 +34,22 @@ export async function onGetUserProjects(query?: Query) {
         return { error: getErrorMessage(error), projects: [] }
     }
 }
+export async function onGetProjectsByKey(key: string) {
+    try {
+        const project = await projectRepository.getProjectByKey(key)
+
+        if (!project) return { error: 'Project not found', project: null }
+
+        return { error: null, project }
+    } catch (error) {
+        return { error: getErrorMessage(error), project: null }
+    }
+}
+export async function onGetProjectMembers(projectId: string) {
+    try {
+        const members = await projectRepository.getAllProjectMembers(projectId)
+        return { error: null, members }
+    } catch (error) {
+        return { error: getErrorMessage(error), members: null }
+    }
+}
