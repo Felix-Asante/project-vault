@@ -67,6 +67,7 @@ function CreateProjectModal(props: CreateProjectModalProps) {
             })
         }
         toast({ description: 'Project created successfully' })
+        form.reset()
         onClose()
         router.refresh()
     }
@@ -88,7 +89,10 @@ function CreateProjectModal(props: CreateProjectModalProps) {
                             <Button
                                 type='button'
                                 variant='outline'
-                                onClick={onClose}
+                                onClick={() => {
+                                    form.reset()
+                                    onClose()
+                                }}
                                 disabled={createProjectMutation.isPending}
                             >
                                 Cancel
