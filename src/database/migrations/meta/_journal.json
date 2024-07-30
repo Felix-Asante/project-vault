@@ -8,6 +8,13 @@
       "when": 1722348608526,
       "tag": "0000_tricky_shen",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1722350311498,
+      "tag": "0001_wild_scrambler",
+      "breakpoints": true
     }
   ]
 }

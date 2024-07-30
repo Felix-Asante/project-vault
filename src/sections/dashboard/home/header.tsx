@@ -1,11 +1,16 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useMutation } from '@tanstack/react-query'
 
+import { CreateProjectDto } from '@/types/dtos/project.dto'
 import { createProjectSchema } from '@/validations/projects'
+import { onCreateProject } from '@/lib/actions/projects'
 import { useFormValidation } from '@/hooks/useFormValidation'
 import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
+import { useToast } from '@/components/ui/use-toast'
 import Button from '@/components/shared/Button'
 import SearchInput from '@/components/shared/inputs/SearchInput'
 
@@ -42,9 +47,29 @@ type CreateProjectModalProps = {
 function CreateProjectModal(props: CreateProjectModalProps) {
     const { open, onClose } = props
 
-    const form = useFormValidation({ schema: createProjectSchema })
+    const form = useFormValidation<CreateProjectDto>({
+        schema: createProjectSchema,
+    })
 
-    const handleSubmit = (data: any) => {}
+    const createProjectMutation = useMutation({
+        mutationFn: onCreateProject,
+    })
+
+    const { toast } = useToast()
+    const router = useRouter()
+
+    const handleSubmit = async (data: CreateProjectDto) => {
+        const response = await createProjectMutation.mutateAsync(data)
+        if (response?.error) {
+            return toast({
+                description: response.error,
+                variant: 'destructive',
+            })
+        }
+        toast({ description: 'Project created successfully' })
+        onClose()
+        router.refresh()
+    }
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
@@ -64,10 +89,16 @@ function CreateProjectModal(props: CreateProjectModalProps) {
                                 type='button'
                                 variant='outline'
                                 onClick={onClose}
+                                disabled={createProjectMutation.isPending}
                             >
                                 Cancel
                             </Button>
-                            <Button type='submit'>Create</Button>
+                            <Button
+                                type='submit'
+                                loading={createProjectMutation.isPending}
+                            >
+                                Create
+                            </Button>
                         </div>
                     </form>
                 </Form>

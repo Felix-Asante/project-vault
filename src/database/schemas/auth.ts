@@ -6,7 +6,8 @@ export const RolesTable = pgTable('roles', {
     label: text('label').unique().notNull(),
     permissions: text('permissions')
         .array()
-        .default(sql`'{}'::text[]`),
+        .default(sql`'{}'::text[]`)
+        .notNull(),
     created_at: timestamp('created_at').defaultNow(),
     updated_at: timestamp('updated_at').defaultNow(),
 })

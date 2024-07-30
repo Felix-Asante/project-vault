@@ -2,6 +2,7 @@ import { SUBSCRIPTION_PLANS } from '@/constants/enum'
 import { relations } from 'drizzle-orm'
 import {
     decimal,
+    integer,
     pgEnum,
     pgTable,
     text,
@@ -35,6 +36,7 @@ export const SubscriptionPlansTable = pgTable('subscriptions_plans', {
     id: uuid('id').primaryKey().defaultRandom(),
     label: subscriptionPlansEnum('plans').default(SUBSCRIPTION_PLANS.BASIC),
     price: decimal('price'),
+    max_projects: integer('max_projects').default(3),
     created_at: timestamp('created_at').defaultNow().notNull(),
     updated_at: timestamp('updated_at').defaultNow().notNull(),
 })

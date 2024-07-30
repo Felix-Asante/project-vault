@@ -18,10 +18,10 @@ export const ProjectTable = pgTable(
         name: text('name').notNull(),
         description: text('description').notNull(),
         logo: text('logo'),
-        created_at: timestamp('created_at').defaultNow(),
-        updated_at: timestamp('updated_at').defaultNow(),
+        created_at: timestamp('created_at').defaultNow().notNull(),
+        updated_at: timestamp('updated_at').defaultNow().notNull(),
         deleted_at: timestamp('deleted_at'),
-        total_members: integer('total_members').default(1),
+        total_members: integer('total_members').default(1).notNull(),
     },
     (table) => {
         return {
