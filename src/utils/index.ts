@@ -1,9 +1,9 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
+import { Query } from '@/types/shared'
 
 import { Env } from './env'
-import { Query } from '@/types/shared'
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
@@ -104,14 +104,26 @@ export function formatNumber(num: number): string {
 }
 
 export function getRandomNumbers(length: number): string {
-  if (length <= 1) {
-    throw new Error("Length must be greater than 1");
-  }
+    if (length <= 1) {
+        throw new Error('Length must be greater than 1')
+    }
 
-  let randomNumber = '';
-  for (let i = 0; i < length; i++) {
-    randomNumber += Math.floor(Math.random() * 10).toString();
-  }
+    let randomNumber = ''
+    for (let i = 0; i < length; i++) {
+        randomNumber += Math.floor(Math.random() * 10).toString()
+    }
 
-  return randomNumber;
+    return randomNumber
+}
+
+export function generateRandomString(length: number = 32): string {
+    const characters = 'abcdefghijklmnopqrstuvwxyz0123456789'
+    let result = ''
+
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length)
+        result += characters.charAt(randomIndex)
+    }
+
+    return result
 }

@@ -18,6 +18,7 @@ export const ProjectTable = pgTable(
         name: text('name').notNull(),
         description: text('description').notNull(),
         logo: text('logo'),
+        key: text('key').notNull(),
         created_at: timestamp('created_at').defaultNow().notNull(),
         updated_at: timestamp('updated_at').defaultNow().notNull(),
         deleted_at: timestamp('deleted_at'),

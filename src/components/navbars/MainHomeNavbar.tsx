@@ -15,15 +15,18 @@ export default async function MainHomeNavbar() {
         user?.firstName
 
     return (
-        <header className='py-4 px-1 lg:p-4'>
-            <nav className='container flex items-center justify-between'>
+        <header className='wrapper border-b'>
+            <nav className='flex items-center justify-between'>
                 <div className='flex items-center gap-2'>
                     <Link href={'/'}>
                         <FolderOpenDotIcon className='w-6 h-6 text-primary' />
                     </Link>
-                    <h1 className='text-base xl:text-lg font-bold lowercase line-clamp-1 w-[90%]'>
+                    <Link
+                        href='/'
+                        className='text-base xl:text-lg font-bold lowercase line-clamp-1 w-[90%]'
+                    >
                         / {fullName}&apos;s Workspace
-                    </h1>
+                    </Link>
                 </div>
                 <div className='flex items-center gap-3'>
                     <Button

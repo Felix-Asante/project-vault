@@ -15,6 +15,20 @@
       "when": 1722350311498,
       "tag": "0001_wild_scrambler",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1722359164410,
+      "tag": "0002_bitter_vapor",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1722359288701,
+      "tag": "0003_workable_maverick",
+      "breakpoints": true
     }
   ]
 }
