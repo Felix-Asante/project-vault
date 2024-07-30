@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm'
 import {
     index,
     integer,
@@ -7,6 +8,7 @@ import {
     uuid,
 } from 'drizzle-orm/pg-core'
 
+import { RolesTable } from './auth'
 import { UserTable } from './users'
 
 export const ProjectTable = pgTable(
@@ -14,7 +16,7 @@ export const ProjectTable = pgTable(
     {
         id: uuid('id').primaryKey().defaultRandom(),
         name: text('name').notNull(),
-        description: text('description'),
+        description: text('description').notNull(),
         logo: text('logo'),
         created_at: timestamp('created_at').defaultNow(),
         updated_at: timestamp('updated_at').defaultNow(),
@@ -38,7 +40,25 @@ export const ProjectMembersTable = pgTable('project_members', {
     user_id: uuid('user_id')
         .references(() => UserTable.id, { onDelete: 'cascade' })
         .notNull(),
-    role: text('role').default('owner'),
+    role: uuid('role').references(() => RolesTable.id, { onDelete: 'cascade' }),
     created_at: timestamp('created_at').defaultNow(),
     updated_at: timestamp('updated_at').defaultNow(),
 })
+
+export const projectMembersRelation = relations(
+    ProjectMembersTable,
+    ({ one }) => ({
+        project: one(ProjectTable, {
+            fields: [ProjectMembersTable.project_id],
+            references: [ProjectTable.id],
+        }),
+        user: one(UserTable, {
+            fields: [ProjectMembersTable.user_id],
+            references: [UserTable.id],
+        }),
+        role: one(RolesTable, {
+            fields: [ProjectMembersTable.role],
+            references: [RolesTable.id],
+        }),
+    })
+)

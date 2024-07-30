@@ -7,3 +7,10 @@ export enum Roles {
     MEMBER = 'member',
     VIEWER = 'viewer',
 }
+
+export enum ProjectPermissions {
+    CAN_CREATE_PROJECT = 'CanCreateProject',
+    CAN_EDIT_PROJECT = 'CanEditProject',
+    CAN_DELETE_PROJECT = 'CanDeleteProject',
+    CAN_VIEW_PROJECT = 'CanViewProject',
+}
