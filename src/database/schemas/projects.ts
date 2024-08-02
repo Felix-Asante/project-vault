@@ -49,7 +49,7 @@ export const ProjectMembersTable = pgTable('project_members', {
     updated_at: timestamp('updated_at').defaultNow(),
 })
 
-export const ProjectNotes = pgTable('project_notes', {
+export const ProjectNotes = pgTable('project_resources', {
     id: uuid('id').primaryKey().defaultRandom(),
     project_id: uuid('project_id')
         .references(() => ProjectTable.id, {

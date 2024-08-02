@@ -36,6 +36,13 @@
       "when": 1722609775780,
       "tag": "0004_safe_warbound",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1722609855618,
+      "tag": "0005_thin_johnny_storm",
+      "breakpoints": true
     }
   ]
 }
