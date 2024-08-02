@@ -49,6 +49,13 @@ export const ProjectMembersTable = pgTable('project_members', {
     updated_at: timestamp('updated_at').defaultNow(),
 })
 
+export const ProjectResourceType = pgTable('project_resources_types', {
+    id: uuid('id').primaryKey().defaultRandom(),
+    name: text('type').notNull(),
+    created_at: timestamp('created_at').defaultNow(),
+    updated_at: timestamp('updated_at').defaultNow(),
+})
+
 export const ProjectNotes = pgTable('project_resources', {
     id: uuid('id').primaryKey().defaultRandom(),
     project_id: uuid('project_id')
@@ -64,6 +71,9 @@ export const ProjectNotes = pgTable('project_resources', {
         .notNull(),
     title: text('title').notNull(),
     note: text('note'),
+    resource_type: uuid('resource_type')
+        .references(() => ProjectResourceType.id)
+        .notNull(),
     created_at: timestamp('created_at').defaultNow(),
     updated_at: timestamp('updated_at').defaultNow(),
 })

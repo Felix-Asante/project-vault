@@ -8,6 +8,10 @@ export enum Roles {
     VIEWER = 'viewer',
 }
 
+export enum PROJECT_RESOURCES_TYPE {
+    NOTE = 'note',
+    ENV = 'env',
+}
 export enum ProjectPermissions {
     CAN_CREATE_PROJECT = 'CanCreateProject',
     CAN_EDIT_PROJECT = 'CanEditProject',
