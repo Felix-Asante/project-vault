@@ -27,8 +27,8 @@ export default async function ProjectOverview(props: PageProps) {
     return (
         <div>
             <section className='py-3'>
-                <div className='flex justify-between mb-2'>
-                    <div className='flex items-start gap-4 lg:gap-6 w-[90%]'>
+                <div className='flex justify-between items-center mb-2'>
+                    <div className='flex items-center gap-4 lg:gap-6 w-[90%]'>
                         <Image
                             src={'/assets/images/logo.png'}
                             width={50}
@@ -40,9 +40,6 @@ export default async function ProjectOverview(props: PageProps) {
                         <div className='w-[80%]'>
                             <p className='text-lg xl:text-xl font-semibold'>
                                 {project.name}
-                            </p>
-                            <p className='text-sm text-gray-500'>
-                                {project.description}
                             </p>
                         </div>
                     </div>
@@ -91,7 +88,7 @@ export default async function ProjectOverview(props: PageProps) {
                         href={`/projects/${project.key}/members`}
                         className='hover:underline hover:text-slate-100 text-sm text-gray-500 flex items-center'
                     >
-                        <span>View all members</span>
+                        <span>Manage members</span>
                         <MoveRightIcon className='w-4 h-4 ml-2' />
                     </Link>
                 </div>

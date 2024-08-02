@@ -29,6 +29,13 @@
       "when": 1722359288701,
       "tag": "0003_workable_maverick",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1722609775780,
+      "tag": "0004_safe_warbound",
+      "breakpoints": true
     }
   ]
 }

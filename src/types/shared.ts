@@ -2,6 +2,11 @@ export type Query = {
     [key: string]: string
 }
 
+export type Paths = {
+    name: string
+    href: string
+    current: boolean
+}
 export type SubcriptionPlan = {
     id: string
     label: string

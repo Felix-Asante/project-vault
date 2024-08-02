@@ -45,38 +45,8 @@ export function pluralize(
     return total > 1 ? (pluralForm ? pluralForm : `${text}s`) : text
 }
 
-interface paths {
-    name: string
-    href: string
-    current: boolean
-}
-export function parsePathname(pathname: string): paths[] {
-    // Remove leading slash if present
-    if (pathname.startsWith('/')) {
-        pathname = pathname.slice(1)
-    }
-
-    // Split the pathname into parts based on slashes
-    const parts = pathname.split('/')
-
-    // Initialize an empty array to store the result
-    const result: paths[] = []
-
-    // Iterate through the parts and build the result array
-    for (let i = 0; i < parts.length; i++) {
-        const part = parts[i]
-        if (part) {
-            const href = '/' + parts.slice(0, i + 1).join('/')
-            const current = i === parts.length - 1
-            result.push({
-                name: part,
-                href,
-                current,
-            })
-        }
-    }
-
-    return result.length ? result : [{ name: 'home', href: '/', current: true }]
+export function capitalize(text: string) {
+    return text.charAt(0).toUpperCase() + text.slice(1)
 }
 
 export function getInitials(text: string): string {

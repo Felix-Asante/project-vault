@@ -49,6 +49,41 @@ export const ProjectMembersTable = pgTable('project_members', {
     updated_at: timestamp('updated_at').defaultNow(),
 })
 
+export const ProjectNotes = pgTable('project_notes', {
+    id: uuid('id').primaryKey().defaultRandom(),
+    project_id: uuid('project_id')
+        .references(() => ProjectTable.id, {
+            onDelete: 'cascade',
+        })
+        .notNull(),
+    created_by: uuid('created_by')
+        .references(() => UserTable.id)
+        .notNull(),
+    last_updated_by: uuid('last_updated_by')
+        .references(() => UserTable.id)
+        .notNull(),
+    title: text('title').notNull(),
+    note: text('note'),
+    created_at: timestamp('created_at').defaultNow(),
+    updated_at: timestamp('updated_at').defaultNow(),
+})
+
+export const ProjectNotesRelation = relations(ProjectNotes, ({ one }) => ({
+    lastUpdatedBy: one(UserTable, {
+        fields: [ProjectNotes.last_updated_by],
+        references: [UserTable.id],
+    }),
+    project: one(ProjectTable, {
+        fields: [ProjectNotes.project_id],
+        references: [ProjectTable.id],
+    }),
+
+    createdBy: one(UserTable, {
+        fields: [ProjectNotes.created_by],
+        references: [UserTable.id],
+    }),
+}))
+
 export const projectMembersRelation = relations(
     ProjectMembersTable,
     ({ one }) => ({
