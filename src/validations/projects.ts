@@ -13,3 +13,9 @@ export const createProjectSchema = z.object({
         }),
     // logo: z.any().optional(),
 })
+
+export const createProjectResourceSchema = z.object({
+    title: z
+        .string({ required_error: 'Resource title is required' })
+        .max(50, { message: 'Resource title should not exceed 50 characters' }),
+})

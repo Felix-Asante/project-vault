@@ -19,6 +19,7 @@ export default function ProjectDetailsSidebar() {
                 const pathname = nav.path(params.slug as string)
                 return (
                     <Link
+                        key={nav.label}
                         href={pathname}
                         className={buttonVariants({
                             variant: 'ghost',

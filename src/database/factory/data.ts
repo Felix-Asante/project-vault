@@ -1,5 +1,10 @@
 import { Member_Owner_Permission } from '@/constants/data'
-import { ProjectPermissions, Roles, SUBSCRIPTION_PLANS } from '@/constants/enum'
+import {
+    PROJECT_RESOURCES_TYPE,
+    ProjectPermissions,
+    Roles,
+    SUBSCRIPTION_PLANS,
+} from '@/constants/enum'
 
 export const PLANS = [
     { label: SUBSCRIPTION_PLANS.BASIC, price: 0 },
@@ -18,5 +23,13 @@ export const ROLES = [
     {
         label: Roles.VIEWER,
         permissions: [ProjectPermissions.CAN_VIEW_PROJECT],
+    },
+]
+export const RESOURCE_TYPES = [
+    {
+        name: PROJECT_RESOURCES_TYPE.NOTE,
+    },
+    {
+        name: PROJECT_RESOURCES_TYPE.ENV,
     },
 ]

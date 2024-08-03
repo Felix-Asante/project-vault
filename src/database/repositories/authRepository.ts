@@ -1,7 +1,9 @@
 import { db } from '@/database'
+import { currentUser } from '@clerk/nextjs/server'
 import { eq } from 'drizzle-orm'
 
 import { RolesTable } from '../schemas/auth'
+import { UserTable } from '../schemas/users'
 
 type CreateRoleDto = {
     label: string
@@ -17,6 +19,18 @@ class AuthRepository {
 
     async createRole(data: CreateRoleDto) {
         return await db.insert(RolesTable).values(data).returning()
+    }
+
+    async getCurrentUser() {
+        const user = await currentUser()
+        if (!user) throw new Error('User not found')
+
+        return await db.query.UserTable.findFirst({
+            where: eq(UserTable.user_id, user.id),
+            with: {
+                plan: true,
+            },
+        })
     }
 }
 

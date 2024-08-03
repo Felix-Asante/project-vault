@@ -13,8 +13,8 @@ export const PROJECT_NAVIGATION = [
         icon: SquareKanbanIcon,
     },
     {
-        label: 'notes',
-        path: (key: string) => `/projects/${key}/notes`,
+        label: 'Resources',
+        path: (key: string) => `/projects/${key}/resources`,
         icon: NotepadTextIcon,
     },
     {

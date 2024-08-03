@@ -19,3 +19,25 @@ export type ProjectMembers = {
     created_at: Date | null
     updated_at: Date | null
 }
+
+export type ProjectResourceTypes = {
+    id: string
+    name: string
+    created_at: Date
+    updated_at: Date
+}
+
+export type ProjectResource = {
+    id: string
+    project_id: string
+    created_by: string
+    last_updated_by: string
+    title: string
+    note: string | null
+    resource_type: string
+    type: ProjectResourceTypes
+    lastUpdatedBy?: User
+    createdBy: User
+    created_at: Date
+    updated_at: Date
+}

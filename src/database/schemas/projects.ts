@@ -49,14 +49,14 @@ export const ProjectMembersTable = pgTable('project_members', {
     updated_at: timestamp('updated_at').defaultNow(),
 })
 
-export const ProjectResourceType = pgTable('project_resources_types', {
+export const ProjectResourceTypeTable = pgTable('project_resources_types', {
     id: uuid('id').primaryKey().defaultRandom(),
     name: text('type').notNull(),
-    created_at: timestamp('created_at').defaultNow(),
-    updated_at: timestamp('updated_at').defaultNow(),
+    created_at: timestamp('created_at').defaultNow().notNull(),
+    updated_at: timestamp('updated_at').defaultNow().notNull(),
 })
 
-export const ProjectNotes = pgTable('project_resources', {
+export const ProjectResourceTable = pgTable('project_resources', {
     id: uuid('id').primaryKey().defaultRandom(),
     project_id: uuid('project_id')
         .references(() => ProjectTable.id, {
@@ -72,27 +72,34 @@ export const ProjectNotes = pgTable('project_resources', {
     title: text('title').notNull(),
     note: text('note'),
     resource_type: uuid('resource_type')
-        .references(() => ProjectResourceType.id)
+        .references(() => ProjectResourceTypeTable.id)
         .notNull(),
-    created_at: timestamp('created_at').defaultNow(),
-    updated_at: timestamp('updated_at').defaultNow(),
+    created_at: timestamp('created_at').defaultNow().notNull(),
+    updated_at: timestamp('updated_at').defaultNow().notNull(),
 })
 
-export const ProjectNotesRelation = relations(ProjectNotes, ({ one }) => ({
-    lastUpdatedBy: one(UserTable, {
-        fields: [ProjectNotes.last_updated_by],
-        references: [UserTable.id],
-    }),
-    project: one(ProjectTable, {
-        fields: [ProjectNotes.project_id],
-        references: [ProjectTable.id],
-    }),
+export const ProjectNotesRelation = relations(
+    ProjectResourceTable,
+    ({ one }) => ({
+        lastUpdatedBy: one(UserTable, {
+            fields: [ProjectResourceTable.last_updated_by],
+            references: [UserTable.id],
+        }),
+        project: one(ProjectTable, {
+            fields: [ProjectResourceTable.project_id],
+            references: [ProjectTable.id],
+        }),
 
-    createdBy: one(UserTable, {
-        fields: [ProjectNotes.created_by],
-        references: [UserTable.id],
-    }),
-}))
+        createdBy: one(UserTable, {
+            fields: [ProjectResourceTable.created_by],
+            references: [UserTable.id],
+        }),
+        type: one(ProjectResourceTypeTable, {
+            fields: [ProjectResourceTable.resource_type],
+            references: [ProjectResourceTypeTable.id],
+        }),
+    })
+)
 
 export const projectMembersRelation = relations(
     ProjectMembersTable,
