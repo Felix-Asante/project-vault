@@ -28,6 +28,10 @@ export default function CreateResourceModal(props: Props) {
         schema: createProjectResourceSchema,
         defaultValue,
     })
+
+    const onFormSubmit = (data: { title: string }) => {
+        onSubmit(data, form.reset)
+    }
     return (
         <Dialog open={open} onOpenChange={loading ? () => {} : onClose}>
             <DialogContent
@@ -39,12 +43,7 @@ export default function CreateResourceModal(props: Props) {
                     <DialogTitle>{title ?? 'Create New Resource'}</DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
-                    <form
-                        onSubmit={form.handleSubmit((data) =>
-                            onSubmit(data, form.reset)
-                        )}
-                        className='mt-6'
-                    >
+                    <form className='mt-6'>
                         <FormInput
                             name='title'
                             control={form.control}
@@ -60,7 +59,11 @@ export default function CreateResourceModal(props: Props) {
                             >
                                 Cancel
                             </Button>
-                            <Button loading={loading} type='submit'>
+                            <Button
+                                loading={loading}
+                                type='button'
+                                onClick={form.handleSubmit(onFormSubmit)}
+                            >
                                 Save
                             </Button>
                         </div>

@@ -9,3 +9,5 @@ export type CreateProjectResDto = {
     type: string
     project: string
 }
+
+export type UpdateProjectDto = Partial<CreateProjectResDto>

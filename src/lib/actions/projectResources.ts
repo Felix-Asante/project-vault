@@ -3,7 +3,7 @@
 import projectResourcesRepository from '@/database/repositories/projectResourcesRepository'
 import { getErrorMessage } from '@/utils'
 
-import { CreateProjectResDto } from '@/types/dtos/project.dto'
+import { CreateProjectResDto, UpdateProjectDto } from '@/types/dtos/project.dto'
 
 export async function onGetProjectResourcesTypes() {
     try {
@@ -33,5 +33,18 @@ export async function onCreateProjectResource(data: CreateProjectResDto) {
     } catch (error) {
         console.error({ error })
         return { error: getErrorMessage(error), resource: [] }
+    }
+}
+
+export async function onUpdateProjectResource(
+    id: string,
+    data: UpdateProjectDto
+) {
+    try {
+        await projectResourcesRepository.updateProjectResource(id, data)
+        return { error: null }
+    } catch (error) {
+        console.error({ error })
+        return { error: getErrorMessage(error) }
     }
 }

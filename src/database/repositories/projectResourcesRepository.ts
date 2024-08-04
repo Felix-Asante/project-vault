@@ -2,7 +2,7 @@ import { db } from '@/database'
 import { getErrorMessage } from '@/utils'
 import { asc, eq } from 'drizzle-orm'
 
-import { CreateProjectResDto } from '@/types/dtos/project.dto'
+import { CreateProjectResDto, UpdateProjectDto } from '@/types/dtos/project.dto'
 
 import {
     ProjectResourceTable,
@@ -57,6 +57,25 @@ class projectResourceRepository {
                     project_id: project,
                 })
                 .returning()
+        } catch (error) {
+            throw new Error(getErrorMessage(error))
+        }
+    }
+
+    async updateProjectResource(id: string, data: UpdateProjectDto) {
+        try {
+            const user = await authRepository.getCurrentUser()
+
+            if (!user) throw new Error('Forbidden access! Please login first')
+
+            await db
+                .update(ProjectResourceTable)
+                .set({
+                    ...data,
+                    last_updated_by: user.id,
+                    updated_at: new Date(),
+                })
+                .where(eq(ProjectResourceTable.id, id))
         } catch (error) {
             throw new Error(getErrorMessage(error))
         }
