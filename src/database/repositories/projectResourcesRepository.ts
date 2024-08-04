@@ -1,6 +1,6 @@
 import { db } from '@/database'
 import { getErrorMessage } from '@/utils'
-import { asc, eq } from 'drizzle-orm'
+import { and, asc, eq, ilike } from 'drizzle-orm'
 
 import { CreateProjectResDto, UpdateProjectDto } from '@/types/dtos/project.dto'
 
@@ -10,10 +10,22 @@ import {
 } from '../schemas/projects'
 import authRepository from './authRepository'
 
+type GetResourceQuery = {
+    search?: string
+    type?: string
+}
 class projectResourceRepository {
-    async getAllProjectResources(projectId: string) {
+    async getAllProjectResources(projectId: string, query?: GetResourceQuery) {
         return await db.query.ProjectResourceTable.findMany({
-            where: eq(ProjectResourceTable.project_id, projectId),
+            where: and(
+                eq(ProjectResourceTable.project_id, projectId),
+                query?.search
+                    ? ilike(ProjectResourceTable.title, `%${query?.search}%`)
+                    : undefined,
+                query?.type
+                    ? eq(ProjectResourceTable.resource_type, query?.type)
+                    : undefined
+            ),
             with: {
                 type: true,
                 createdBy: true,

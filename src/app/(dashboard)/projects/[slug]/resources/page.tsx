@@ -9,9 +9,13 @@ type PageProps = {
     params: {
         slug: string
     }
+    searchParams: {
+        search: string
+        type: string
+    }
 }
 export default async function Notes(props: PageProps) {
-    const { params } = props
+    const { params, searchParams } = props
     const [resourceType, { project }] = await Promise.all([
         onGetProjectResourcesTypes(),
         onGetProjectsByKey(params.slug),
@@ -29,6 +33,7 @@ export default async function Notes(props: PageProps) {
                 <ProjectResourceList
                     resourceTypes={resourceType.types}
                     project={project.id}
+                    query={searchParams}
                 />
             </div>
         </div>

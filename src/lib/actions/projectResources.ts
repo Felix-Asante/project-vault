@@ -4,6 +4,7 @@ import projectResourcesRepository from '@/database/repositories/projectResources
 import { getErrorMessage } from '@/utils'
 
 import { CreateProjectResDto, UpdateProjectDto } from '@/types/dtos/project.dto'
+import { Query } from '@/types/shared'
 
 export async function onGetProjectResourcesTypes() {
     try {
@@ -15,10 +16,13 @@ export async function onGetProjectResourcesTypes() {
         return { error: getErrorMessage(error), types: [] }
     }
 }
-export async function onGetAllProjectResources(project: string) {
+export async function onGetAllProjectResources(project: string, query?: Query) {
     try {
         const resources =
-            await projectResourcesRepository.getAllProjectResources(project)
+            await projectResourcesRepository.getAllProjectResources(
+                project,
+                query
+            )
         return { error: null, resources }
     } catch (error) {
         console.error({ error })
