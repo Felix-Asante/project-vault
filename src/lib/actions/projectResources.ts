@@ -48,3 +48,13 @@ export async function onUpdateProjectResource(
         return { error: getErrorMessage(error) }
     }
 }
+
+export async function onDeleteProjectResource(id: string) {
+    try {
+        await projectResourcesRepository.deleteProjectResource(id)
+        return { error: null }
+    } catch (error) {
+        console.error({ error })
+        return { error: getErrorMessage(error) }
+    }
+}

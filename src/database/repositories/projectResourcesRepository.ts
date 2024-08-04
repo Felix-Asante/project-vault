@@ -80,6 +80,16 @@ class projectResourceRepository {
             throw new Error(getErrorMessage(error))
         }
     }
+
+    async deleteProjectResource(id: string) {
+        try {
+            await db
+                .delete(ProjectResourceTable)
+                .where(eq(ProjectResourceTable.id, id))
+        } catch (error) {
+            throw new Error(getErrorMessage(error))
+        }
+    }
 }
 
 export default new projectResourceRepository()

@@ -6,9 +6,13 @@ import { useMutation } from '@tanstack/react-query'
 import { EyeIcon, Settings2Icon, Trash2Icon } from 'lucide-react'
 
 import { ProjectResource } from '@/types/projects'
-import { onUpdateProjectResource } from '@/lib/actions/projectResources'
+import {
+    onDeleteProjectResource,
+    onUpdateProjectResource,
+} from '@/lib/actions/projectResources'
 import { useToast } from '@/components/ui/use-toast'
 import Button from '@/components/shared/Button'
+import DeleteConfirmationModal from '@/components/shared/modals/DeleteConfirmationModal'
 
 import CreateResourceModal from './CreateResourceModal'
 
@@ -45,10 +49,37 @@ export default function ResourceListRow({
             onUpdateProjectResource(id, data),
     })
 
+    const deleteResourceMutation = useMutation({
+        mutationFn: onDeleteProjectResource,
+    })
+
     const closeModal = () =>
         setResourceAction({ action: ResourceModal.DEFAULT, resource: null })
 
-    const deleteResource = async () => {}
+    const deleteResource = async () => {
+        if (!resourceAction.resource) {
+            toast({
+                description: 'Invalid details provided',
+                variant: 'destructive',
+            })
+            return
+        }
+
+        closeModal()
+
+        const response = await deleteResourceMutation.mutateAsync(
+            resourceAction.resource.id
+        )
+        if (response?.error) {
+            toast({
+                description: 'Something went wrong while deleting resource',
+                variant: 'destructive',
+            })
+            return
+        }
+        router.refresh()
+        toast({ description: 'Resource deleted successfully' })
+    }
 
     const updateResource = async (data: { title: string }, reset: Function) => {
         if (!data.title || !resourceAction.resource) {
@@ -78,7 +109,14 @@ export default function ResourceListRow({
     }
 
     const Modal = {
-        [ResourceModal.DELETE]: () => <div>Delete</div>,
+        [ResourceModal.DELETE]: () => (
+            <DeleteConfirmationModal
+                isOpen
+                onClose={closeModal}
+                onConfirm={deleteResource}
+                loading={deleteResourceMutation.isPending}
+            />
+        ),
         [ResourceModal.UPDATE]: () => (
             <CreateResourceModal
                 open
