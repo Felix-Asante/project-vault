@@ -8,6 +8,7 @@ export type CreateProjectResDto = {
     title: string
     type: string
     project: string
+    note?: string
 }
 
 export type UpdateProjectDto = Partial<CreateProjectResDto>

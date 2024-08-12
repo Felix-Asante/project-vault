@@ -29,6 +29,18 @@ export async function onGetAllProjectResources(project: string, query?: Query) {
         return { error: getErrorMessage(error), resources: [] }
     }
 }
+
+export async function onGetResourceById(resourceId: string) {
+    try {
+        const resource =
+            await projectResourcesRepository.getProjectResourceById(resourceId)
+        if (!resource) return { error: 'Resource not found', resource: null }
+        return { error: null, resource }
+    } catch (error) {
+        console.error({ error })
+        return { error: getErrorMessage(error), resource: null }
+    }
+}
 export async function onCreateProjectResource(data: CreateProjectResDto) {
     try {
         const resource =

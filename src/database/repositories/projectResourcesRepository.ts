@@ -39,6 +39,22 @@ class projectResourceRepository {
         return await db.query.ProjectResourceTypeTable.findMany()
     }
 
+    async getProjectResourceById(id: string) {
+        try {
+            const resource = await db.query.ProjectResourceTable.findFirst({
+                where: eq(ProjectResourceTable.id, id),
+                with: {
+                    type: true,
+                    createdBy: true,
+                    lastUpdatedBy: true,
+                },
+            })
+            return resource
+        } catch (error) {
+            throw new Error(getErrorMessage(error))
+        }
+    }
+
     async getProjectResourceTypeById(id: string) {
         try {
             const type = await db.query.ProjectResourceTypeTable.findFirst({

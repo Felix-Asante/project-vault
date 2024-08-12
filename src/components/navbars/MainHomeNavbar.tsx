@@ -15,7 +15,7 @@ export default async function MainHomeNavbar() {
         user?.firstName
 
     return (
-        <header className='wrapper border-b'>
+        <header className='wrapper border-b sticky top-0 left-0 z-10 bg-background'>
             <nav className='flex items-center justify-between'>
                 <div className='flex items-center gap-2'>
                     <Link href={'/'}>

@@ -1,7 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
+import { PROJECT_RESOURCES_TYPE } from '@/constants/enum'
 import { useMutation } from '@tanstack/react-query'
 import { EyeIcon, Settings2Icon, Trash2Icon } from 'lucide-react'
 
@@ -10,6 +12,7 @@ import {
     onDeleteProjectResource,
     onUpdateProjectResource,
 } from '@/lib/actions/projectResources'
+import { buttonVariants } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
 import Button from '@/components/shared/Button'
 import DeleteConfirmationModal from '@/components/shared/modals/DeleteConfirmationModal'
@@ -31,6 +34,17 @@ type CreateResPayload = {
     data: { title: string }
     id: string
 }
+
+function getResourcePath(path: string, resource: ProjectResource) {
+    switch (resource.type?.name) {
+        case PROJECT_RESOURCES_TYPE.ENV:
+            return `${path}/env/${resource.id}`
+        case PROJECT_RESOURCES_TYPE.NOTE:
+            return `${path}/notes/${resource.id}`
+        default:
+            return `${path}/notes/${resource.id}`
+    }
+}
 export default function ResourceListRow({
     resource,
 }: {
@@ -43,6 +57,7 @@ export default function ResourceListRow({
 
     const { toast } = useToast()
     const router = useRouter()
+    const pathname = usePathname()
 
     const updateResourceMutation = useMutation({
         mutationFn: ({ id, data }: CreateResPayload) =>
@@ -191,13 +206,13 @@ export default function ResourceListRow({
                     >
                         <Trash2Icon />
                     </Button>
-                    <Button
-                        variant='ghost'
-                        className='w-6 h-6 p-1'
+                    <Link
+                        href={getResourcePath(pathname, resource)}
+                        className={'w-6 h-6 p-1 hover:bg-accent rounded-sm'}
                         title='view resource'
                     >
-                        <EyeIcon />
-                    </Button>
+                        <EyeIcon className='text-white w-full h-full' />
+                    </Link>
                 </div>
             </div>
             <Modal />
