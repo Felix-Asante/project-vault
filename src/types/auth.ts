@@ -13,6 +13,7 @@ export type User = {
     updated_at: Date
     plan: string
     slug: string
+    challenges: string[]
 }
 
 export type Role = {

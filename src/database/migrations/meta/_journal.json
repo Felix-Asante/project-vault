@@ -57,6 +57,13 @@
       "when": 1722714320168,
       "tag": "0007_short_nightmare",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1723657186502,
+      "tag": "0008_flowery_moonstone",
+      "breakpoints": true
     }
   ]
 }

@@ -18,3 +18,9 @@ export enum ProjectPermissions {
     CAN_DELETE_PROJECT = 'CanDeleteProject',
     CAN_VIEW_PROJECT = 'CanViewProject',
 }
+
+export enum INVITATION_STATUS {
+    PENDING = 'pending',
+    ACCEPTED = 'accepted',
+    REJECTED = 'rejected',
+}

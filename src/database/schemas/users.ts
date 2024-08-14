@@ -1,5 +1,5 @@
 import { SUBSCRIPTION_PLANS } from '@/constants/enum'
-import { relations } from 'drizzle-orm'
+import { relations, sql } from 'drizzle-orm'
 import {
     decimal,
     integer,
@@ -30,6 +30,10 @@ export const UserTable = pgTable('users', {
         .notNull(),
     slug: text('slug').unique().notNull(),
     subscription_ends_at: timestamp('subscription_ends_at'),
+    challenges: text('challenges')
+        .array()
+        .notNull()
+        .default(sql`ARRAY[]::text[]`),
 })
 
 export const SubscriptionPlansTable = pgTable('subscriptions_plans', {
