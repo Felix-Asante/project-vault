@@ -31,7 +31,7 @@ export default async function Members(props: PageProps) {
 
     return (
         <div className='py-5 px-4'>
-            <MembersHeaders />
+            <MembersHeaders roles={roles} />
             <MembersList members={members} roles={roles} />
         </div>
     )

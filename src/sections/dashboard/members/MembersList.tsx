@@ -44,7 +44,7 @@ export default function MembersList(props: MembersListProps) {
                 </div>
                 <Button variant={'outline'} className='bg-accent/50 gap-x-2'>
                     <LinkIcon className='w-4 h-4' />
-                    <span>Invite Link</span>
+                    <span>Copy invitation link</span>
                 </Button>
             </div>
             <div className='border border-border rounded-md py-3 mt-5'>

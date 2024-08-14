@@ -1,3 +1,7 @@
+import { z } from 'zod'
+
+import { invitationSchema } from '@/validations/auth'
+
 export type User = {
     id: string
     last_name: string
@@ -18,3 +22,5 @@ export type Role = {
     label: string
     permissions: string[]
 }
+
+export type InvitationDto = z.infer<typeof invitationSchema>

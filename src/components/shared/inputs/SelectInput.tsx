@@ -13,6 +13,7 @@ interface Options {
     label: string
     value: string
     id?: string
+    disabled?: boolean
 }
 interface Props {
     name: string
@@ -55,7 +56,11 @@ export default function SelectInput({
                 </SelectTrigger>
                 <SelectContent>
                     {sortOptions(options)?.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
+                        <SelectItem
+                            key={option.value}
+                            value={option.value}
+                            disabled={option?.disabled}
+                        >
                             {option?.id ? `(${option?.id})` : ''} {option.label}
                         </SelectItem>
                     ))}
