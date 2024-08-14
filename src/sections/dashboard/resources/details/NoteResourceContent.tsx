@@ -66,14 +66,14 @@ export default function NoteResourceContent(props: Props) {
                         <SparklesIcon className='w-4 h-4' />
                         <span>Ask Ai</span>
                     </Button>
-                    <Button
+                    {/* <Button
                         disabled={!content || updateResourceMutation.isPending}
                         variant='ghost'
                         className='text-primary gap-2'
                     >
                         <ForwardIcon className='w-4 h-4' />
                         <span>Share</span>
-                    </Button>
+                    </Button> */}
                 </div>
             </div>
             <div className='min-h-screen'>

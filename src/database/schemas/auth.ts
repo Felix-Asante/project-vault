@@ -8,8 +8,8 @@ export const RolesTable = pgTable('roles', {
         .array()
         .default(sql`'{}'::text[]`)
         .notNull(),
-    created_at: timestamp('created_at').defaultNow(),
-    updated_at: timestamp('updated_at').defaultNow(),
+    created_at: timestamp('created_at').defaultNow().notNull(),
+    updated_at: timestamp('updated_at').defaultNow().notNull(),
 })
 
 // export const PermissionsTable = pgTable('permissions', {

@@ -17,6 +17,10 @@ class AuthRepository {
         })
     }
 
+    async getAllRoles() {
+        return await db.query.RolesTable.findMany()
+    }
+
     async createRole(data: CreateRoleDto) {
         return await db.insert(RolesTable).values(data).returning()
     }

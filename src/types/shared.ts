@@ -21,3 +21,15 @@ export type AbstractTableField = {
     deleted_at: Date | null
     id: string
 }
+
+export type PaginationMetaData = {
+    currentPage: number
+    limit: number
+    totalPages: number
+    totalCount: number
+}
+
+export type PaginationResult<T> = {
+    items: T[]
+    metadata: PaginationMetaData
+}

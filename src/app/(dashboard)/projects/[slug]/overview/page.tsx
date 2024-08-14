@@ -4,6 +4,7 @@ import MembersTable from '@/sections/dashboard/projects/MembersTable'
 import { formatDistance } from 'date-fns'
 import { MoveRightIcon, MoveUpRightIcon } from 'lucide-react'
 
+import { onGetAllRoles } from '@/lib/actions/auth'
 import { onGetProjectMembers, onGetProjectsByKey } from '@/lib/actions/projects'
 import { buttonVariants } from '@/components/ui/button'
 import EmptyContent from '@/components/shared/ErrorContent'
@@ -23,6 +24,8 @@ export default async function ProjectOverview(props: PageProps) {
     const { members, error: membersError } = await onGetProjectMembers(
         project.id
     )
+
+    const { roles } = await onGetAllRoles()
 
     return (
         <div>
@@ -58,30 +61,29 @@ export default async function ProjectOverview(props: PageProps) {
                     <div className='text-sm'>
                         <span className='text-primary'>Created: </span>
                         <span>
-                            {formatDistance(new Date(), project.created_at, {
-                                addSuffix: true,
-                            })}{' '}
-                            by Felix Asante
+                            {formatDistance(new Date(), project.created_at)} by
+                            Felix Asante
                         </span>
                     </div>
                     <div className='text-sm sm:pl-2'>
                         <span className='text-primary'>Modified: </span>
                         <span>
-                            {formatDistance(new Date(), project.created_at, {
-                                addSuffix: true,
-                            })}{' '}
-                            by Felix Asante
+                            {formatDistance(new Date(), project.created_at)} by
+                            Felix Asante
                         </span>
                     </div>
                 </div>
             </section>
 
-            <section className='border rounded-md mt-8'>
-                <div className='border-b'>
+            <section className='border border-border rounded-md mt-8'>
+                <div className='border-b border-border'>
                     <h2 className='text-xl font-semibold p-4 py-2.5'>
                         Members
                     </h2>
-                    <MembersTable members={members?.items ?? []} />
+                    <MembersTable
+                        members={members?.items ?? []}
+                        roles={roles}
+                    />
                 </div>
                 <div className='p-2'>
                     <Link

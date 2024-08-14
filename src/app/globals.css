@@ -80,7 +80,8 @@
     color: #000;
 }
 
-[data-floating-ui-portal] {
+[data-floating-ui-portal],
+[data-radix-popper-content-wrapper] {
     color: #000;
 }
 
@@ -97,6 +98,9 @@
     display: none;
 }
 
+#yoo-block-options-portal-c65e8668-1c7e-44ff-9cf0-28b33750ef6a + div {
+    background-color: #2b2d30 !important;
+}
 #slack .yoopta-editor .yoopta-mark-code {
     color: #e8912d;
     background-color: #2b2d30;

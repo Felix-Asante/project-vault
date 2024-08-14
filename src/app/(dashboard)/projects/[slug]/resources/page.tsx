@@ -29,7 +29,7 @@ export default async function Notes(props: PageProps) {
                 resourceTypes={resourceType.types}
                 project={project.id}
             />
-            <div className='border p-3 rounded-md mt-5'>
+            <div className='border border-border p-3 rounded-md mt-5'>
                 <ProjectResourceList
                     resourceTypes={resourceType.types}
                     project={project.id}

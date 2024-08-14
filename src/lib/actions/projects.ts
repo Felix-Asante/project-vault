@@ -45,9 +45,12 @@ export async function onGetProjectsByKey(key: string) {
         return { error: getErrorMessage(error), project: null }
     }
 }
-export async function onGetProjectMembers(projectId: string) {
+export async function onGetProjectMembers(projectId: string, queries?: Query) {
     try {
-        const members = await projectRepository.getAllProjectMembers(projectId)
+        const members = await projectRepository.getAllProjectMembers(
+            projectId,
+            queries
+        )
         return { error: null, members }
     } catch (error) {
         return { error: getErrorMessage(error), members: null }

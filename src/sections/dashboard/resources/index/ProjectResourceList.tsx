@@ -20,7 +20,7 @@ export default async function ProjectResourceList(props: Props) {
     return (
         <div>
             <TableFilters resourceTypes={resourceTypes} />
-            <div className='mt-4 divide-y'>
+            <div className='mt-4 divide-y divide-border'>
                 <div className='pb-2 pt-4 px-2 hidden lg:grid grid-cols-2 lg:grid-cols-5 hover:bg-accent/20 gap-4 items-center'>
                     {TableColumns.map((column) => (
                         <p key={column} className='text-gray-600 text-sm'>

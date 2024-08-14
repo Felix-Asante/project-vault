@@ -2,7 +2,7 @@ import { Member_Owner_Permission } from '@/constants/data'
 import { Roles } from '@/constants/enum'
 import { db } from '@/database'
 import { generateRandomString, getErrorMessage } from '@/utils'
-import { and, eq, ilike, sql } from 'drizzle-orm'
+import { and, eq, ilike, or, sql } from 'drizzle-orm'
 
 import { CreateProjectDto } from '@/types/dtos/project.dto'
 import { ProJects } from '@/types/projects'
@@ -10,6 +10,7 @@ import { Query } from '@/types/shared'
 
 import { RolesTable } from '../schemas/auth'
 import { ProjectMembersTable, ProjectTable } from '../schemas/projects'
+import { UserTable } from '../schemas/users'
 import authRepository from './authRepository'
 import usersRepository from './usersRepository'
 
@@ -124,19 +125,44 @@ class ProjectsRepository {
         options?: GetProjectMembersOptions
     ) {
         try {
-            const { limit = 100, page = 1 } = options ?? {}
+            const { limit = 10, page = 1, search = '', sortBy } = options ?? {}
 
             const offset = (page - 1) * limit
 
-            const projectMembers = await db.query.ProjectMembersTable.findMany({
-                where: eq(ProjectMembersTable.project_id, projectId),
-                with: {
-                    role: true,
-                    user: true,
-                },
-                limit,
-                offset,
-            })
+            const projectMembers = await db
+                .select({
+                    id: ProjectMembersTable.id,
+                    user_id: ProjectMembersTable.user_id,
+                    project_id: ProjectMembersTable.id,
+                    created_at: ProjectMembersTable.created_at,
+                    updated_at: ProjectMembersTable.updated_at,
+                    role: RolesTable,
+                    user: UserTable,
+                })
+                .from(ProjectMembersTable)
+                .innerJoin(
+                    UserTable,
+                    eq(UserTable.id, ProjectMembersTable.user_id)
+                )
+                .innerJoin(
+                    RolesTable,
+                    eq(RolesTable.id, ProjectMembersTable.role)
+                )
+                .where(
+                    and(
+                        eq(ProjectMembersTable.project_id, projectId),
+                        search
+                            ? or(
+                                  ilike(UserTable.first_name, `%${search}%`),
+                                  ilike(UserTable.last_name, `%${search}%`),
+                                  ilike(UserTable.email, `%${search}%`)
+                              )
+                            : undefined
+                    )
+                )
+                .limit(limit)
+                .offset(offset)
+
             const [{ count = 1 }] = await db
                 .select({
                     count: sql`count(*)`,
@@ -150,7 +176,7 @@ class ProjectsRepository {
                     currentPage: page,
                     limit,
                     totalPages,
-                    totalCount: count,
+                    totalCount: count as number,
                 },
             }
         } catch (error) {

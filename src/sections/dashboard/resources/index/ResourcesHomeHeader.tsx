@@ -92,6 +92,9 @@ export default function ResourcesHomeHeader(props: Props) {
                         <Fragment key={type.id}>
                             <DropdownMenuItem
                                 onClick={() => setSelectedType(type.id)}
+                                disabled={
+                                    type.name === PROJECT_RESOURCES_TYPE.ENV
+                                }
                             >
                                 {getResourceIcon(type.name)}
                                 <span className='capitalize'>{type.name}</span>

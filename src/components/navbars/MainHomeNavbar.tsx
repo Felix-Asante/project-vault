@@ -15,7 +15,7 @@ export default async function MainHomeNavbar() {
         user?.firstName
 
     return (
-        <header className='wrapper border-b sticky top-0 left-0 z-10 bg-background'>
+        <header className='wrapper border-b !border-border sticky top-0 left-0 z-10 bg-background'>
             <nav className='flex items-center justify-between'>
                 <div className='flex items-center gap-2'>
                     <Link href={'/'}>
@@ -31,7 +31,7 @@ export default async function MainHomeNavbar() {
                 <div className='flex items-center gap-3'>
                     <Button
                         variant='outline'
-                        className='border-input rounded-[4px] text-gray-400 py-1.5 h-fit'
+                        className='rounded-[4px] text-gray-400 py-1.5 h-fit'
                     >
                         Feedback
                     </Button>
