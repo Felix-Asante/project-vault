@@ -8,6 +8,7 @@
 import { INVITATION_STATUS } from '@/constants/enum'
 import { db } from '@/database'
 import { getErrorMessage } from '@/utils'
+import { hasPassed48Hours } from '@/utils/formatDates'
 import { and, eq, ilike, or, sql } from 'drizzle-orm'
 
 import { Invitation } from '@/types/auth'
@@ -18,6 +19,7 @@ import { PaginationOptions, PaginationResult } from '@/types/shared'
 import { RolesTable } from '../schemas/auth'
 import { InvitationsTable } from '../schemas/invitations'
 import { UserTable } from '../schemas/users'
+import projectRepository from './projectRepository'
 
 export type InvitationRepository = {
     findAllProjectInvitations(projectId: string): Promise<Invitation[]>
@@ -26,6 +28,10 @@ export type InvitationRepository = {
         projectId: string,
         options?: PaginationOptions
     ): Promise<PaginationResult<InvitedMembers> | null>
+    findInvitationByEmail(
+        email: string,
+        project: string
+    ): Promise<InvitedMembers>
 }
 export function createInvitationRepository(): InvitationRepository {
     return {
@@ -39,13 +45,36 @@ export function createInvitationRepository(): InvitationRepository {
             })
         },
 
+        async findInvitationByEmail(email, project) {
+            const [invitation] = await db
+                .select({
+                    id: InvitationsTable.id,
+                    user_id: InvitationsTable.id,
+                    email: InvitationsTable.email,
+                    project_id: InvitationsTable.project,
+                    created_at: InvitationsTable.created_at,
+                    updated_at: InvitationsTable.updated_at,
+                    role: RolesTable,
+                })
+                .from(InvitationsTable)
+                .innerJoin(RolesTable, eq(RolesTable.id, InvitationsTable.role))
+                .where(
+                    and(
+                        eq(InvitationsTable.project, project),
+                        eq(InvitationsTable.email, email)
+                    )
+                )
+
+            return invitation
+        },
+
         async findPendingInvitationsByProject(projectId, options) {
             try {
                 const { limit = 10, page = 1, search = '' } = options ?? {}
 
                 const offset = (page - 1) * limit
 
-                const projectMembers = await db
+                const invitedMembers = await db
                     .select({
                         id: InvitationsTable.id,
                         user_id: InvitationsTable.id,
@@ -56,7 +85,6 @@ export function createInvitationRepository(): InvitationRepository {
                         role: RolesTable,
                     })
                     .from(InvitationsTable)
-
                     .innerJoin(
                         RolesTable,
                         eq(RolesTable.id, InvitationsTable.role)
@@ -81,7 +109,7 @@ export function createInvitationRepository(): InvitationRepository {
                 const totalPages = Math.ceil((count as number) / limit)
 
                 return {
-                    items: projectMembers,
+                    items: invitedMembers,
                     metadata: {
                         currentPage: page,
                         limit,
@@ -108,6 +136,34 @@ export function createInvitationRepository(): InvitationRepository {
                 }
                 if (!user) {
                     throw new Error('Unauthorized:login to invite users')
+                }
+
+                // check if user is already a member of the project
+
+                const [member] =
+                    await projectRepository.getProjectMemberByEmail(
+                        email,
+                        project
+                    )
+
+                if (member) {
+                    throw new Error('User is already a member of the project')
+                }
+
+                // check if the user is already invited within the last 48h
+                const invitedMember = await this.findInvitationByEmail(
+                    email,
+                    project
+                )
+                const alreadyInvited =
+                    invitedMember &&
+                    invitedMember.created_at &&
+                    !hasPassed48Hours(invitedMember.created_at)
+
+                if (alreadyInvited) {
+                    throw new Error(
+                        'User is already invited within the last 48 hours'
+                    )
                 }
 
                 // create user

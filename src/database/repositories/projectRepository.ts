@@ -186,6 +186,40 @@ class ProjectsRepository {
         }
     }
 
+    async getProjectMemberByEmail(email: string, project: string) {
+        try {
+            const member = await db
+                .select({
+                    id: ProjectMembersTable.id,
+                    user_id: ProjectMembersTable.user_id,
+                    project_id: ProjectMembersTable.id,
+                    created_at: ProjectMembersTable.created_at,
+                    updated_at: ProjectMembersTable.updated_at,
+                    role: RolesTable,
+                    user: UserTable,
+                })
+                .from(ProjectMembersTable)
+                .innerJoin(
+                    UserTable,
+                    eq(UserTable.id, ProjectMembersTable.user_id)
+                )
+                .innerJoin(
+                    RolesTable,
+                    eq(RolesTable.id, ProjectMembersTable.role)
+                )
+                .where(
+                    and(
+                        eq(UserTable.email, email),
+                        eq(ProjectMembersTable.project_id, project)
+                    )
+                )
+
+            return member
+        } catch (error) {
+            throw new Error(getErrorMessage(error))
+        }
+    }
+
     getProjectFields() {
         return {
             id: ProjectTable.id,
