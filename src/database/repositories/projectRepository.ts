@@ -5,14 +5,14 @@ import { generateRandomString, getErrorMessage } from '@/utils'
 import { and, eq, ilike, or, sql } from 'drizzle-orm'
 
 import { CreateProjectDto } from '@/types/dtos/project.dto'
-import { ProJects } from '@/types/projects'
-import { Query } from '@/types/shared'
+import { ProjectMembers, ProJects } from '@/types/projects'
+import { PaginationResult, Query } from '@/types/shared'
 
 import { RolesTable } from '../schemas/auth'
 import { ProjectMembersTable, ProjectTable } from '../schemas/projects'
 import { UserTable } from '../schemas/users'
 import authRepository from './authRepository'
-import usersRepository from './usersRepository'
+import { createUsersRepository } from './usersRepository'
 
 type GetProjectMembersOptions = {
     limit?: number
@@ -23,6 +23,7 @@ type GetProjectMembersOptions = {
 class ProjectsRepository {
     async createProject(userId: string, data: CreateProjectDto) {
         try {
+            const usersRepository = createUsersRepository()
             const user = await usersRepository.getUserByClerkId(userId)
             if (!user) throw new Error('User not found')
 
@@ -81,6 +82,7 @@ class ProjectsRepository {
 
     async getUserProjects(userId: string, query?: Query) {
         try {
+            const usersRepository = createUsersRepository()
             const user = await usersRepository.getUserByClerkId(userId)
             if (!user) throw new Error('User not found')
 
@@ -123,7 +125,7 @@ class ProjectsRepository {
     async getAllProjectMembers(
         projectId: string,
         options?: GetProjectMembersOptions
-    ) {
+    ): Promise<PaginationResult<ProjectMembers> | null> {
         try {
             const { limit = 10, page = 1, search = '', sortBy } = options ?? {}
 

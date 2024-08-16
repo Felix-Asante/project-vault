@@ -1,5 +1,7 @@
 'use server'
 
+import { INVITATION_STATUS } from '@/constants/enum'
+import { createInvitationRepository } from '@/database/repositories/invitationRepository'
 import projectRepository from '@/database/repositories/projectRepository'
 import { getErrorMessage } from '@/utils'
 import { currentUser } from '@clerk/nextjs/server'
@@ -47,6 +49,15 @@ export async function onGetProjectsByKey(key: string) {
 }
 export async function onGetProjectMembers(projectId: string, queries?: Query) {
     try {
+        if (queries && queries?.status === INVITATION_STATUS.PENDING) {
+            const invitationRepository = createInvitationRepository()
+            const pendingInvitations =
+                await invitationRepository.findPendingInvitationsByProject(
+                    projectId,
+                    queries
+                )
+            return { error: null, members: pendingInvitations }
+        }
         const members = await projectRepository.getAllProjectMembers(
             projectId,
             queries

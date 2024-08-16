@@ -1,4 +1,5 @@
 import { createContext, PropsWithChildren, useContext } from 'react'
+import { useAuth } from '@clerk/nextjs'
 import { useQuery } from '@tanstack/react-query'
 
 import { User } from '@/types/auth'
@@ -28,13 +29,15 @@ export function useSharedContext() {
 }
 
 export function SharedContextProvider({ children }: PropsWithChildren) {
+    const { isSignedIn, userId } = useAuth()
+
     const { data, isLoading } = useQuery({
         queryKey: ['getAllResourcesTypes'],
-        queryFn: onGetProjectResourcesTypes,
+        queryFn: () => onGetProjectResourcesTypes(),
     })
     const { data: results, isLoading: fetchingUser } = useQuery({
-        queryKey: ['getCurrentUser'],
-        queryFn: onGetUserByClerkId,
+        queryKey: ['getCurrentUser', isSignedIn, userId],
+        queryFn: () => onGetUserByClerkId(),
     })
 
     return (

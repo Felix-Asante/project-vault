@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
     title: 'Project Vault',
-    description: 'Project credentials management app',
+    description: 'Project  management app',
 }
 
 export default function RootLayout({

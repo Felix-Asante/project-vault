@@ -20,6 +20,8 @@ export type ProjectMembers = {
     updated_at: Date | null
 }
 
+export type InvitedMembers = Omit<ProjectMembers, 'user'> & { email: string }
+
 export type ProjectResourceTypes = {
     id: string
     name: string

@@ -39,7 +39,7 @@ function Row(props: RowProps) {
     const showUpdateBtn = watch(name) && member.role?.id !== watch(name)
     return (
         <div className='p-4 border-t border-border'>
-            <div className='flex items-center justify-between'>
+            <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-y-5'>
                 <div className='flex items-center gap-2'>
                     {' '}
                     <Avatar className='w-8 h-8'>

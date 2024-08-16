@@ -1,8 +1,11 @@
 import React from 'react'
 import { redirect } from 'next/navigation'
+import { INVITATION_STATUS } from '@/constants/enum'
 import MembersHeaders from '@/sections/dashboard/members/MembersHeaders'
 import MembersList from '@/sections/dashboard/members/MembersList'
 
+import { ProjectMembers } from '@/types/projects'
+import { PaginationResult } from '@/types/shared'
 import { onGetAllRoles } from '@/lib/actions/auth'
 import { onGetProjectMembers, onGetProjectsByKey } from '@/lib/actions/projects'
 
@@ -12,7 +15,8 @@ type PageProps = {
     }
     searchParams: {
         search: string
-        type: string
+        status: string
+        role: string
         page: string
     }
 }
@@ -29,10 +33,16 @@ export default async function Members(props: PageProps) {
 
     const { roles } = await onGetAllRoles()
 
+    const isPending = searchParams?.status === INVITATION_STATUS.PENDING
+
     return (
         <div className='py-5 px-4'>
-            <MembersHeaders roles={roles} />
-            <MembersList members={members} roles={roles} />
+            <MembersHeaders roles={roles} project={project.id} />
+            <MembersList
+                members={members}
+                roles={roles}
+                isPending={isPending}
+            />
         </div>
     )
 }

@@ -1,7 +1,11 @@
 'use client'
 
 import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Roles } from '@/constants/enum'
+import { useSharedContext } from '@/context/SharedContext'
+import { getErrorMessage } from '@/utils'
+import { useMutation } from '@tanstack/react-query'
 import {
     CirclePlusIcon,
     SendIcon,
@@ -10,8 +14,13 @@ import {
 } from 'lucide-react'
 import { useFieldArray } from 'react-hook-form'
 
-import { InvitationDto, Role } from '@/types/auth'
+import { Role } from '@/types/auth'
+import { InvitationDto } from '@/types/dtos/auth.dto'
 import { invitationSchema } from '@/validations/auth'
+import {
+    onGetAllProjectInvitations,
+    onSendProjectInvitation,
+} from '@/lib/actions/invitations'
 import { useFormValidation } from '@/hooks/useFormValidation'
 import { Form } from '@/components/ui/form'
 import {
@@ -20,16 +29,19 @@ import {
     SheetHeader,
     SheetTitle,
 } from '@/components/ui/sheet'
+import { useToast } from '@/components/ui/use-toast'
 import Button from '@/components/shared/Button'
 import FormInput from '@/components/shared/inputs/FormInput'
 import SelectInput from '@/components/shared/inputs/SelectInput'
 
 type MembersHeadersProps = {
     roles: Role[]
+    project: string
 }
 export default function MembersHeaders(props: MembersHeadersProps) {
-    const { roles } = props
+    const { roles, project } = props
     const [isOpen, setIsOpen] = useState(false)
+
     return (
         <div className='flex items-center justify-between'>
             <div>
@@ -49,6 +61,7 @@ export default function MembersHeaders(props: MembersHeadersProps) {
                 roles={roles}
                 isOpen={isOpen}
                 onClose={() => setIsOpen(false)}
+                project={project}
             />
         </div>
     )
@@ -58,10 +71,11 @@ interface AddMemberSheetProps {
     isOpen: boolean
     onClose: () => void
     roles: Role[]
+    project: string
 }
 
 function AddMemberSheet(props: AddMemberSheetProps) {
-    const { isOpen, onClose, roles } = props
+    const { isOpen, onClose, roles, project } = props
 
     const form = useFormValidation<InvitationDto>({ schema: invitationSchema })
 
@@ -70,8 +84,72 @@ function AddMemberSheet(props: AddMemberSheetProps) {
         name: 'invitees',
     })
 
-    const handleSubmit = (data: InvitationDto) => {
-        console.log(data)
+    const { toast } = useToast()
+    const { user } = useSharedContext()
+    const router = useRouter()
+
+    const sendInvitation = useMutation({
+        mutationFn: onSendProjectInvitation,
+    })
+
+    const removeSentInvitations = (
+        sentInvitations: { error: string | null }[]
+    ) => {
+        sentInvitations.forEach((invitee, index) => {
+            if (!invitee.error) {
+                remove(index)
+            }
+        })
+    }
+    const handleSubmit = async (data: InvitationDto) => {
+        try {
+            if (!user) {
+                return toast({
+                    description: 'Please sign in to invite members',
+                })
+            }
+            const invitations = data.invitees.filter(
+                (invitee) => invitee.email && invitee.role
+            )
+
+            if (invitations.length === 0) {
+                return toast({
+                    description: 'Please invite  at least one member',
+                })
+            }
+
+            const sentInvitations = await Promise.all(
+                invitations.map((invitee) =>
+                    sendInvitation.mutateAsync({
+                        project,
+                        ...invitee,
+                        invited_by: user.id,
+                    })
+                )
+            )
+
+            if (sentInvitations.some((invitee) => invitee.error !== null)) {
+                // did not filter cos i don't want to mistakenly delete an invitation which was sent successfully
+                removeSentInvitations(sentInvitations)
+                return toast({ description: 'Failed to send invitations' })
+            }
+
+            // clear form
+            form.reset()
+            // remove all existing invitations
+            remove()
+            // close sheet
+            onClose()
+            router.refresh()
+            toast({
+                description: 'Invitations sent successfully',
+            })
+        } catch (error) {
+            toast({
+                description: getErrorMessage(error),
+                variant: 'destructive',
+            })
+        }
     }
 
     return (
@@ -139,6 +217,7 @@ function AddMemberSheet(props: AddMemberSheetProps) {
                             })
                         }
                         type='button'
+                        disabled={sendInvitation.isPending}
                     >
                         <CirclePlusIcon className='w-4 h-4' />
                         <span>Add more</span>
@@ -149,6 +228,7 @@ function AddMemberSheet(props: AddMemberSheetProps) {
                         onClick={form.handleSubmit(handleSubmit)}
                         type='button'
                         disabled={fields.length === 0}
+                        loading={sendInvitation.isPending}
                     >
                         <SendIcon className='w-4 h-4' />
                         <span>Send invitation</span>

@@ -33,3 +33,10 @@ export type PaginationResult<T> = {
     items: T[]
     metadata: PaginationMetaData
 }
+
+export type PaginationOptions = {
+    limit?: number
+    page?: number
+    search?: string
+    sortBy?: string
+}
