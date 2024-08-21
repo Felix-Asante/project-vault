@@ -145,10 +145,10 @@ function AddMemberSheet(props: AddMemberSheetProps) {
             form.reset()
             remove()
             onClose()
+            router.refresh()
             toast({
                 description: 'Invitations sent successfully',
             })
-            router.refresh()
         } catch (error) {
             toast({
                 description: getErrorMessage(error),

@@ -42,16 +42,19 @@ function Row({ member }: { member: InvitedMembers }) {
                     </p>
                 )}
 
-                {hasPassed48h ? (
-                    <Button
-                        variant='destructive'
-                        className='text-sm 2xl:text-base'
-                    >
-                        Revoke
+                <div className='flex items-center gap-3'>
+                    <Button className='text-sm 2xl:text-base text-white'>
+                        Resend
                     </Button>
-                ) : (
-                    <div></div>
-                )}
+                    {hasPassed48h && (
+                        <Button
+                            variant='destructive'
+                            className='text-sm 2xl:text-base'
+                        >
+                            Revoke
+                        </Button>
+                    )}
+                </div>
             </div>
         </div>
     )

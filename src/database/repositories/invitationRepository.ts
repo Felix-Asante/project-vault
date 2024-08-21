@@ -157,15 +157,13 @@ export function createInvitationRepository(): InvitationRepository {
                     email,
                     project
                 )
-                const alreadyInvited =
-                    invitedMember &&
-                    invitedMember.created_at &&
-                    !hasPassed48Hours(invitedMember.created_at)
+                const alreadyInvited = invitedMember
+                // &&
+                // invitedMember.created_at &&
+                // !hasPassed48Hours(invitedMember.created_at)
 
                 if (alreadyInvited) {
-                    throw new Error(
-                        'User is already invited within the last 48 hours'
-                    )
+                    throw new Error('User has already been invited')
                 }
 
                 // create user
