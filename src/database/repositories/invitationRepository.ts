@@ -32,6 +32,9 @@ export type InvitationRepository = {
         email: string,
         project: string
     ): Promise<InvitedMembers>
+    findInvitationById(id: string): Promise<InvitedMembers>
+    resendInvitation(invitationId: string): Promise<void>
+    revokeInvitation(invitationId: string): Promise<void>
 }
 export function createInvitationRepository(): InvitationRepository {
     return {
@@ -64,6 +67,24 @@ export function createInvitationRepository(): InvitationRepository {
                         eq(InvitationsTable.email, email)
                     )
                 )
+                .orderBy(desc(InvitationsTable.created_at))
+
+            return invitation
+        },
+        async findInvitationById(invitationId) {
+            const [invitation] = await db
+                .select({
+                    id: InvitationsTable.id,
+                    user_id: InvitationsTable.id,
+                    email: InvitationsTable.email,
+                    project_id: InvitationsTable.project,
+                    created_at: InvitationsTable.created_at,
+                    updated_at: InvitationsTable.updated_at,
+                    role: RolesTable,
+                })
+                .from(InvitationsTable)
+                .innerJoin(RolesTable, eq(RolesTable.id, InvitationsTable.role))
+                .where(eq(InvitationsTable.id, invitationId))
                 .orderBy(desc(InvitationsTable.created_at))
 
             return invitation
@@ -179,6 +200,30 @@ export function createInvitationRepository(): InvitationRepository {
 
                 // send email
             })
+        },
+
+        async resendInvitation(invitationId) {
+            try {
+                const invitation = await this.findInvitationById(invitationId)
+                if (!invitation) {
+                    throw new Error('Invitation not found')
+                }
+
+                // resend email
+            } catch (error) {
+                throw new Error(getErrorMessage(error))
+            }
+        },
+
+        async revokeInvitation(invitationId) {
+            const invitation = await this.findInvitationById(invitationId)
+            if (!invitation) {
+                throw new Error('Invitation not found')
+            }
+
+            await db
+                .delete(InvitationsTable)
+                .where(eq(InvitationsTable.id, invitationId))
         },
     }
 }

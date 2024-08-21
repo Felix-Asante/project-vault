@@ -57,3 +57,31 @@ export const onSendProjectInvitation = permissionProcedure
             return { error: getErrorMessage(error) }
         }
     })
+
+export const onRevokeInvitation = permissionProcedure
+    .createServerAction()
+    .input(z.object({ invitationId: z.string() }).and(permissionsSchema))
+    .handler(async ({ input }) => {
+        try {
+            const { invitationId } = input
+            const invitationRepository = createInvitationRepository()
+            await invitationRepository.revokeInvitation(invitationId)
+            return { error: null }
+        } catch (error) {
+            return { error: getErrorMessage(error) }
+        }
+    })
+
+export const onResendInvitation = permissionProcedure
+    .createServerAction()
+    .input(z.object({ invitationId: z.string() }).and(permissionsSchema))
+    .handler(async ({ input }) => {
+        try {
+            const { invitationId } = input
+            const invitationRepository = createInvitationRepository()
+            await invitationRepository.resendInvitation(invitationId)
+            return { error: null }
+        } catch (error) {
+            return { error: getErrorMessage(error) }
+        }
+    })
