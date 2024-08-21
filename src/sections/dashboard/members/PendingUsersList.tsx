@@ -1,5 +1,6 @@
 import React from 'react'
-import { differenceInBusinessDays, formatDate } from 'date-fns'
+import { hasPassed48Hours } from '@/utils/formatDates'
+import { format, formatDate } from 'date-fns'
 
 import { InvitedMembers } from '@/types/projects'
 import Button from '@/components/shared/Button'
@@ -22,12 +23,8 @@ export default function PendingUsersList(props: Props) {
 }
 
 function Row({ member }: { member: InvitedMembers }) {
-    console.log(
-        'hasPassed48h:',
-        differenceInBusinessDays(new Date(), member.created_at!)
-    )
     const hasPassed48h =
-        differenceInBusinessDays(new Date(), member.created_at!) > 2
+        member.created_at && hasPassed48Hours(member.created_at)
 
     return (
         <div className='p-4 border-t border-border'>
@@ -38,10 +35,12 @@ function Row({ member }: { member: InvitedMembers }) {
                         Assigned role: {member.role.label}
                     </p>
                 </div>
-                <p className='text-sm  2xl:text-base'>
-                    Invitation sent:{' '}
-                    {formatDate(member.created_at!, 'Mo MMM yyyy HH:mm')}
-                </p>
+                {member.created_at && (
+                    <p className='text-sm  2xl:text-base text-left'>
+                        Invitation sent:{' '}
+                        {format(member.created_at, 'do MMM yyyy HH:mm')}
+                    </p>
+                )}
 
                 {hasPassed48h ? (
                     <Button
@@ -50,7 +49,9 @@ function Row({ member }: { member: InvitedMembers }) {
                     >
                         Revoke
                     </Button>
-                ) : null}
+                ) : (
+                    <div></div>
+                )}
             </div>
         </div>
     )

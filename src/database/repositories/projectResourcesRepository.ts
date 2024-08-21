@@ -1,6 +1,6 @@
 import { db } from '@/database'
 import { getErrorMessage } from '@/utils'
-import { and, asc, eq, ilike } from 'drizzle-orm'
+import { and, asc, desc, eq, ilike } from 'drizzle-orm'
 
 import { CreateProjectResDto, UpdateProjectDto } from '@/types/dtos/project.dto'
 
@@ -31,7 +31,7 @@ class projectResourceRepository {
                 createdBy: true,
                 lastUpdatedBy: true,
             },
-            orderBy: asc(ProjectResourceTable.created_at),
+            orderBy: desc(ProjectResourceTable.created_at),
         })
     }
 

@@ -4,6 +4,7 @@ import MembersTable from '@/sections/dashboard/projects/MembersTable'
 import { formatDistance } from 'date-fns'
 import { MoveRightIcon, MoveUpRightIcon } from 'lucide-react'
 
+import { ProjectMembers } from '@/types/projects'
 import { onGetAllRoles } from '@/lib/actions/auth'
 import { onGetProjectMembers, onGetProjectsByKey } from '@/lib/actions/projects'
 import { buttonVariants } from '@/components/ui/button'
@@ -26,6 +27,8 @@ export default async function ProjectOverview(props: PageProps) {
     )
 
     const { roles } = await onGetAllRoles()
+
+    const users = members?.items ?? []
 
     return (
         <div>
@@ -81,7 +84,7 @@ export default async function ProjectOverview(props: PageProps) {
                         Members
                     </h2>
                     <MembersTable
-                        members={members?.items ?? []}
+                        members={users as ProjectMembers[]}
                         roles={roles}
                     />
                 </div>

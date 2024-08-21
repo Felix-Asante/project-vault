@@ -40,3 +40,10 @@ export type PaginationOptions = {
     search?: string
     sortBy?: string
 }
+
+export type ProcedureErrorActions = 'logout' | null
+
+export type ProcedureError = {
+    message: string
+    action: ProcedureErrorActions
+}

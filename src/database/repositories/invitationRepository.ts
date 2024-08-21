@@ -9,11 +9,11 @@ import { INVITATION_STATUS } from '@/constants/enum'
 import { db } from '@/database'
 import { getErrorMessage } from '@/utils'
 import { hasPassed48Hours } from '@/utils/formatDates'
-import { and, eq, ilike, or, sql } from 'drizzle-orm'
+import { and, desc, eq, ilike, sql } from 'drizzle-orm'
 
 import { Invitation } from '@/types/auth'
 import { SendInvitationDto } from '@/types/dtos/invitation.dto'
-import { InvitedMembers, ProjectMembers } from '@/types/projects'
+import { InvitedMembers } from '@/types/projects'
 import { PaginationOptions, PaginationResult } from '@/types/shared'
 
 import { RolesTable } from '../schemas/auth'
@@ -64,6 +64,7 @@ export function createInvitationRepository(): InvitationRepository {
                         eq(InvitationsTable.email, email)
                     )
                 )
+                .orderBy(desc(InvitationsTable.created_at))
 
             return invitation
         },
@@ -99,6 +100,7 @@ export function createInvitationRepository(): InvitationRepository {
                     )
                     .limit(limit)
                     .offset(offset)
+                    .orderBy(desc(InvitationsTable.created_at))
 
                 const [{ count = 1 }] = await db
                     .select({
@@ -123,7 +125,7 @@ export function createInvitationRepository(): InvitationRepository {
         },
 
         async sendInvitation(payload) {
-            db.transaction(async (trx) => {
+            await db.transaction(async (trx) => {
                 const { email, role, project, invited_by } = payload
                 const selectedRole = await trx.query.RolesTable.findFirst({
                     where: eq(RolesTable.id, role),
@@ -173,6 +175,8 @@ export function createInvitationRepository(): InvitationRepository {
                     project,
                     invited_by: user.id,
                     status: INVITATION_STATUS.PENDING,
+                    created_at: new Date(),
+                    updated_at: new Date(),
                 })
 
                 // send email

@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Roles } from '@/constants/enum'
+import { ProjectPermissions, Roles } from '@/constants/enum'
 import { useSharedContext } from '@/context/SharedContext'
 import { getErrorMessage } from '@/utils'
 import { useMutation } from '@tanstack/react-query'
@@ -13,6 +13,7 @@ import {
     UserRoundPlusIcon,
 } from 'lucide-react'
 import { useFieldArray } from 'react-hook-form'
+import { useServerAction } from 'zsa-react'
 
 import { Role } from '@/types/auth'
 import { InvitationDto } from '@/types/dtos/auth.dto'
@@ -21,6 +22,7 @@ import {
     onGetAllProjectInvitations,
     onSendProjectInvitation,
 } from '@/lib/actions/invitations'
+import { useServerActionMutation } from '@/hooks/server-action-hooks'
 import { useFormValidation } from '@/hooks/useFormValidation'
 import { Form } from '@/components/ui/form'
 import {
@@ -87,25 +89,31 @@ function AddMemberSheet(props: AddMemberSheetProps) {
     const { toast } = useToast()
     const { user } = useSharedContext()
     const router = useRouter()
-
-    const sendInvitation = useMutation({
-        mutationFn: onSendProjectInvitation,
-    })
+    const { isPending, mutateAsync } = useServerActionMutation(
+        onSendProjectInvitation
+    )
 
     const removeSentInvitations = (
         sentInvitations: { error: string | null }[]
     ) => {
         sentInvitations.forEach((invitee, index) => {
-            if (!invitee.error) {
+            if (!invitee?.error) {
                 remove(index)
+            } else {
+                toast({
+                    description: invitee.error,
+                    variant: 'destructive',
+                })
             }
         })
     }
+
     const handleSubmit = async (data: InvitationDto) => {
         try {
             if (!user) {
                 return toast({
                     description: 'Please sign in to invite members',
+                    variant: 'destructive',
                 })
             }
             const invitations = data.invitees.filter(
@@ -115,35 +123,32 @@ function AddMemberSheet(props: AddMemberSheetProps) {
             if (invitations.length === 0) {
                 return toast({
                     description: 'Please invite  at least one member',
+                    variant: 'destructive',
                 })
             }
 
             const sentInvitations = await Promise.all(
                 invitations.map((invitee) =>
-                    sendInvitation.mutateAsync({
+                    mutateAsync({
                         project,
                         ...invitee,
-                        invited_by: user.id,
+                        permission: ProjectPermissions.CAN_SEND_INVITATION,
                     })
                 )
             )
 
-            if (sentInvitations.some((invitee) => invitee.error !== null)) {
+            if (sentInvitations.some((invitee) => invitee?.error !== null)) {
                 // did not filter cos i don't want to mistakenly delete an invitation which was sent successfully
-                removeSentInvitations(sentInvitations)
-                return toast({ description: 'Failed to send invitations' })
+                return removeSentInvitations(sentInvitations)
             }
 
-            // clear form
             form.reset()
-            // remove all existing invitations
             remove()
-            // close sheet
             onClose()
-            router.refresh()
             toast({
                 description: 'Invitations sent successfully',
             })
+            router.refresh()
         } catch (error) {
             toast({
                 description: getErrorMessage(error),
@@ -217,7 +222,7 @@ function AddMemberSheet(props: AddMemberSheetProps) {
                             })
                         }
                         type='button'
-                        disabled={sendInvitation.isPending}
+                        disabled={isPending}
                     >
                         <CirclePlusIcon className='w-4 h-4' />
                         <span>Add more</span>
@@ -228,7 +233,7 @@ function AddMemberSheet(props: AddMemberSheetProps) {
                         onClick={form.handleSubmit(handleSubmit)}
                         type='button'
                         disabled={fields.length === 0}
-                        loading={sendInvitation.isPending}
+                        loading={isPending}
                     >
                         <SendIcon className='w-4 h-4' />
                         <span>Send invitation</span>
