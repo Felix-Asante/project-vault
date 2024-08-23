@@ -19,6 +19,7 @@ import { onSendInvitationEmail } from '@/lib/actions/emails'
 
 import { RolesTable } from '../schemas/auth'
 import { InvitationsTable } from '../schemas/invitations'
+import { ProjectTable } from '../schemas/projects'
 import { UserTable } from '../schemas/users'
 import projectRepository from './projectRepository'
 
@@ -37,6 +38,18 @@ export type InvitationRepository = {
     resendInvitation(invitationId: string): Promise<void>
     revokeInvitation(invitationId: string): Promise<void>
 }
+const createInvitationSelectField = () => ({
+    id: InvitationsTable.id,
+    user_id: InvitationsTable.id,
+    email: InvitationsTable.email,
+    key: InvitationsTable.key,
+    project_id: InvitationsTable.project,
+    project: ProjectTable,
+    user: UserTable,
+    created_at: InvitationsTable.created_at,
+    updated_at: InvitationsTable.updated_at,
+    role: RolesTable,
+})
 export function createInvitationRepository(): InvitationRepository {
     return {
         async findAllProjectInvitations(projectId: string) {
@@ -51,17 +64,17 @@ export function createInvitationRepository(): InvitationRepository {
 
         async findInvitationByEmail(email, project) {
             const [invitation] = await db
-                .select({
-                    id: InvitationsTable.id,
-                    user_id: InvitationsTable.id,
-                    email: InvitationsTable.email,
-                    project_id: InvitationsTable.project,
-                    created_at: InvitationsTable.created_at,
-                    updated_at: InvitationsTable.updated_at,
-                    role: RolesTable,
-                })
+                .select(createInvitationSelectField())
                 .from(InvitationsTable)
                 .innerJoin(RolesTable, eq(RolesTable.id, InvitationsTable.role))
+                .innerJoin(
+                    ProjectTable,
+                    eq(ProjectTable.id, InvitationsTable.project)
+                )
+                .innerJoin(
+                    UserTable,
+                    eq(UserTable.id, InvitationsTable.invited_by)
+                )
                 .where(
                     and(
                         eq(InvitationsTable.project, project),
@@ -74,17 +87,17 @@ export function createInvitationRepository(): InvitationRepository {
         },
         async findInvitationById(invitationId) {
             const [invitation] = await db
-                .select({
-                    id: InvitationsTable.id,
-                    user_id: InvitationsTable.id,
-                    email: InvitationsTable.email,
-                    project_id: InvitationsTable.project,
-                    created_at: InvitationsTable.created_at,
-                    updated_at: InvitationsTable.updated_at,
-                    role: RolesTable,
-                })
+                .select(createInvitationSelectField())
                 .from(InvitationsTable)
                 .innerJoin(RolesTable, eq(RolesTable.id, InvitationsTable.role))
+                .innerJoin(
+                    ProjectTable,
+                    eq(ProjectTable.id, InvitationsTable.project)
+                )
+                .innerJoin(
+                    UserTable,
+                    eq(UserTable.id, InvitationsTable.invited_by)
+                )
                 .where(eq(InvitationsTable.id, invitationId))
                 .orderBy(desc(InvitationsTable.created_at))
 
@@ -98,19 +111,19 @@ export function createInvitationRepository(): InvitationRepository {
                 const offset = (page - 1) * limit
 
                 const invitedMembers = await db
-                    .select({
-                        id: InvitationsTable.id,
-                        user_id: InvitationsTable.id,
-                        email: InvitationsTable.email,
-                        project_id: InvitationsTable.project,
-                        created_at: InvitationsTable.created_at,
-                        updated_at: InvitationsTable.updated_at,
-                        role: RolesTable,
-                    })
+                    .select(createInvitationSelectField())
                     .from(InvitationsTable)
                     .innerJoin(
                         RolesTable,
                         eq(RolesTable.id, InvitationsTable.role)
+                    )
+                    .innerJoin(
+                        ProjectTable,
+                        eq(ProjectTable.id, InvitationsTable.project)
+                    )
+                    .innerJoin(
+                        UserTable,
+                        eq(UserTable.id, InvitationsTable.invited_by)
                     )
                     .where(
                         and(
@@ -229,6 +242,16 @@ export function createInvitationRepository(): InvitationRepository {
                 const invitation = await this.findInvitationById(invitationId)
                 if (!invitation) {
                     throw new Error('Invitation not found')
+                }
+                const { error } = await onSendInvitationEmail({
+                    invitedBy: invitation.user,
+                    invitationKey: invitation.key,
+                    invitedUserEmail: invitation.email,
+                    project: invitation.project,
+                })
+
+                if (error) {
+                    throw error
                 }
 
                 // resend email
