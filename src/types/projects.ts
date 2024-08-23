@@ -7,7 +7,7 @@ export type ProJects = AbstractTableField & {
     key: string
     logo: string | null
     total_members: number
-    role: Role | null
+    // role: Role | null
 }
 
 export type ProjectMembers = {

@@ -7,7 +7,7 @@
 
 import { INVITATION_STATUS } from '@/constants/enum'
 import { db } from '@/database'
-import { getErrorMessage } from '@/utils'
+import { generateRandomString, getErrorMessage } from '@/utils'
 import { hasPassed48Hours } from '@/utils/formatDates'
 import { and, desc, eq, ilike, sql } from 'drizzle-orm'
 
@@ -15,6 +15,7 @@ import { Invitation } from '@/types/auth'
 import { SendInvitationDto } from '@/types/dtos/invitation.dto'
 import { InvitedMembers } from '@/types/projects'
 import { PaginationOptions, PaginationResult } from '@/types/shared'
+import { onSendInvitationEmail } from '@/lib/actions/emails'
 
 import { RolesTable } from '../schemas/auth'
 import { InvitationsTable } from '../schemas/invitations'
@@ -148,12 +149,22 @@ export function createInvitationRepository(): InvitationRepository {
         async sendInvitation(payload) {
             await db.transaction(async (trx) => {
                 const { email, role, project, invited_by } = payload
+                const invitationKey = generateRandomString(32)
+
                 const selectedRole = await trx.query.RolesTable.findFirst({
                     where: eq(RolesTable.id, role),
                 })
                 const user = await trx.query.UserTable.findFirst({
                     where: eq(UserTable.id, invited_by),
                 })
+
+                const activeProject =
+                    await projectRepository.getProjectById(project)
+
+                if (!activeProject) {
+                    throw new Error('Project not found')
+                }
+
                 if (!selectedRole) {
                     throw new Error('Role not found')
                 }
@@ -196,9 +207,20 @@ export function createInvitationRepository(): InvitationRepository {
                     status: INVITATION_STATUS.PENDING,
                     created_at: new Date(),
                     updated_at: new Date(),
+                    key: invitationKey,
                 })
 
                 // send email
+                const { error } = await onSendInvitationEmail({
+                    invitedBy: user,
+                    invitationKey,
+                    invitedUserEmail: email,
+                    project: activeProject,
+                })
+
+                if (error) {
+                    throw error
+                }
             })
         },
 

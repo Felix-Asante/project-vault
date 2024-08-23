@@ -27,3 +27,7 @@ export enum INVITATION_STATUS {
     ACCEPTED = 'accepted',
     REJECTED = 'rejected',
 }
+
+export enum EmailTemplateType {
+    SEND_INVITATION = 'SEND_INVITATION',
+}

@@ -9,6 +9,7 @@ import { UserTable } from './users'
 export const InvitationsTable = pgTable('invitations', {
     id: uuid('id').primaryKey().defaultRandom().notNull(),
     email: text('email').notNull(),
+    key: text('key').notNull(),
     role: uuid('role')
         .notNull()
         .references(() => RolesTable.id),

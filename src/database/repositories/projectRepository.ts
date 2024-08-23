@@ -121,6 +121,17 @@ class ProjectsRepository {
             throw new Error(getErrorMessage(error))
         }
     }
+    async getProjectById(id: string) {
+        try {
+            const project = await db.query.ProjectTable.findFirst({
+                where: eq(ProjectTable.id, id),
+            })
+
+            return project
+        } catch (error) {
+            throw new Error(getErrorMessage(error))
+        }
+    }
 
     async getAllProjectMembers(
         projectId: string,

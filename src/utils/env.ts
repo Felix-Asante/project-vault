@@ -13,6 +13,8 @@ export const Env = createEnv({
         CLOUDINARY_CLOUD_NAME: z.string(),
         CLOUDINARY_SECRET: z.string(),
         CLOUDINARY_KEY: z.string(),
+        RESEND_API_KEY: z.string(),
+        TEST_EMAIL: z.string(),
     },
     client: {
         NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
@@ -22,6 +24,8 @@ export const Env = createEnv({
         NEXT_PUBLIC_CLOUDINARY_IMAGE_DOMAIN: z.string(),
         NEXT_PUBLIC_APP_URL: z.string(),
         NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: z.string(),
+        NEXT_PUBLIC_VERCEL_URL: z.string(),
+        NEXT_PUBLIC_EMAIL_SENDER: z.string(),
     },
     runtimeEnv: {
         // NODE_ENV: process.env.NODE_ENV,
@@ -30,6 +34,8 @@ export const Env = createEnv({
         CLOUDINARY_KEY: process.env.CLOUDINARY_KEY,
         CLOUDINARY_SECRET: process.env.CLOUDINARY_SECRET,
         CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
+        RESEND_API_KEY: process.env.RESEND_API_KEY,
+        TEST_EMAIL: process.env.TEST_EMAIL,
         NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
             process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
         NEXT_PUBLIC_CLERK_SIGN_IN_URL:
@@ -41,7 +47,10 @@ export const Env = createEnv({
         NEXT_PUBLIC_CLOUDINARY_IMAGE_DOMAIN:
             process.env.NEXT_PUBLIC_CLOUDINARY_IMAGE_DOMAIN,
         NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-        NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL,
+        NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL:
+            process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL,
+        NEXT_PUBLIC_VERCEL_URL: process.env.NEXT_PUBLIC_VERCEL_URL,
+        NEXT_PUBLIC_EMAIL_SENDER: process.env.NEXT_PUBLIC_EMAIL_SENDER,
     },
 })
 
