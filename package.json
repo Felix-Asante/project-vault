@@ -79,6 +79,7 @@
     "zsa-react-query": "^0.2.1"
   },
   "devDependencies": {
+    "@clerk/testing": "^1.2.21",
     "@ianvs/prettier-plugin-sort-imports": "^4.3.1",
     "@tanstack/eslint-plugin-query": "^5.51.12",
     "@testing-library/dom": "^10.4.0",
