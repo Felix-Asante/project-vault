@@ -2,11 +2,14 @@ import { createEnv } from '@t3-oss/env-nextjs'
 import dotenv from 'dotenv'
 import { z } from 'zod'
 
-dotenv.config({ path: '.env.local' })
+const envPath =
+    process.env.NODE_ENV === 'test' ? 'env.test.local' : '.env.local'
+
+dotenv.config({ path: envPath })
 
 export const Env = createEnv({
     server: {
-        // NODE_ENV: z.enum(['development', 'test', 'production']),
+        NODE_ENV: z.enum(['development', 'test', 'production']),
         DATABASE_URL: z.string(),
         CLERK_SECRET_KEY: z.string(),
         CLERK_WEBHOOK_SECRET: z.string(),
@@ -28,7 +31,7 @@ export const Env = createEnv({
         NEXT_PUBLIC_EMAIL_SENDER: z.string(),
     },
     runtimeEnv: {
-        // NODE_ENV: process.env.NODE_ENV,
+        NODE_ENV: process.env.NODE_ENV,
         DATABASE_URL: process.env.DATABASE_URL,
         CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
         CLOUDINARY_KEY: process.env.CLOUDINARY_KEY,

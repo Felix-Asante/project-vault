@@ -85,3 +85,13 @@ export const onResendInvitation = permissionProcedure
             return { error: getErrorMessage(error) }
         }
     })
+
+export const onGetInvitationByKey = async (key: string) => {
+    try {
+        const invitationRepository = createInvitationRepository()
+        const invitation = await invitationRepository.findInvitationByKey(key)
+        return { invitation }
+    } catch (error) {
+        return { error: getErrorMessage(error) }
+    }
+}

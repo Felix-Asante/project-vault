@@ -35,8 +35,10 @@ export type InvitationRepository = {
         project: string
     ): Promise<InvitedMembers>
     findInvitationById(id: string): Promise<InvitedMembers>
+    findInvitationByKey(id: string): Promise<InvitedMembers>
     resendInvitation(invitationId: string): Promise<void>
     revokeInvitation(invitationId: string): Promise<void>
+    declineInvitation(invitationId: string): Promise<void>
 }
 const createInvitationSelectField = () => ({
     id: InvitationsTable.id,
@@ -99,6 +101,24 @@ export function createInvitationRepository(): InvitationRepository {
                     eq(UserTable.id, InvitationsTable.invited_by)
                 )
                 .where(eq(InvitationsTable.id, invitationId))
+                .orderBy(desc(InvitationsTable.created_at))
+
+            return invitation
+        },
+        async findInvitationByKey(invitationKey) {
+            const [invitation] = await db
+                .select(createInvitationSelectField())
+                .from(InvitationsTable)
+                .innerJoin(RolesTable, eq(RolesTable.id, InvitationsTable.role))
+                .innerJoin(
+                    ProjectTable,
+                    eq(ProjectTable.id, InvitationsTable.project)
+                )
+                .innerJoin(
+                    UserTable,
+                    eq(UserTable.id, InvitationsTable.invited_by)
+                )
+                .where(eq(InvitationsTable.key, invitationKey))
                 .orderBy(desc(InvitationsTable.created_at))
 
             return invitation
@@ -269,6 +289,17 @@ export function createInvitationRepository(): InvitationRepository {
             await db
                 .delete(InvitationsTable)
                 .where(eq(InvitationsTable.id, invitationId))
+        },
+
+        async declineInvitation(invitationId) {
+            try {
+                await db
+                    .update(InvitationsTable)
+                    .set({ status: INVITATION_STATUS.REJECTED })
+                    .where(eq(InvitationsTable.id, invitationId))
+            } catch (error) {
+                throw error
+            }
         },
     }
 }

@@ -26,6 +26,7 @@ export enum INVITATION_STATUS {
     PENDING = 'pending',
     ACCEPTED = 'accepted',
     REJECTED = 'rejected',
+    WAITING_FOR_ACCOUNT = 'waitingForAccount',
 }
 
 export enum EmailTemplateType {

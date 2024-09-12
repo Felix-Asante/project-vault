@@ -46,6 +46,7 @@ export default function SearchInput(props: SearchInputProps) {
                             <SearchIcon className='w-4 h-4 text-gray-700' />
                         )
                     }
+                    data-testid='search-input'
                 />
             )}
         />
