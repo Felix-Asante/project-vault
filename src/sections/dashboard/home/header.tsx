@@ -23,11 +23,15 @@ export default function DashboardHomeHeader() {
         <>
             <div className='flex items-center justify-between '>
                 <div className='w-[60%]'>
-                    <SearchInput placeholder='Search Projects' />
+                    <SearchInput
+                        placeholder='Search Projects'
+                        data-cy='search-input'
+                    />
                 </div>
                 <Button
                     className='text-white'
                     onClick={() => setOpenCreateProjectModal(true)}
+                    data-cy='add-new-project'
                 >
                     Add new project
                 </Button>
